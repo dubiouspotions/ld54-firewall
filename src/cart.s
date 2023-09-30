@@ -201,8 +201,13 @@ NMI:
 ; Data segment
 
 palette_data:
-	.byte $00, $0F, $00, $10, 	$00, $0A, $15, $01, 	$00, $29, $28, $27, 	$00, $34, $24, $14 	;background palettes
-	.byte $31, $0F, $15, $30, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes
+	; Background palettes
+	; 	  tileset color 1		unused					fire					unused
+	.byte $16, $1D, $26, $37, 	$00, $00, $00, $00, 	$05, $05, $26, $38, 	$00, $00, $00, $00
+
+	; Sprite palettes
+	;	  player 1				player 2				fire					unused
+	.byte $0F, $11, $22, $33, 	$0F, $15, $25, $35, 	$00, $05, $26, $38, 	$00, $00, $00, $00
 
 initial_sprite_data:
 ;					 +-------- Flip sprite vertically
