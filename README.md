@@ -17,6 +17,5 @@ Setup based on [this video](https://www.youtube.com/watch?v=V5uWqdK92i0).
 ## Build and run
 
 ```
-make firewall # will generate build/firewall.nes
-make run      # will try to launch mesen with firewall.nes
+make all      # will generate build/firewall.nes. now you can open it with mesen
 ```
