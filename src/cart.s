@@ -197,6 +197,12 @@ UPDATE:
 	RTS
 
 RESPOND_TO_INPUT:
+	LDX player_1 + Player::pos + Vector::xcoord
+	INX
+	STX player_1 + Player::pos + Vector::xcoord
+	LDX player_1 + Player::pos + Vector::ycoord
+	INX
+	STX player_1 + Player::pos + Vector::ycoord
 	; TODO: Listen to controllers and change acceleration/velocity
 	RTS
 
@@ -221,7 +227,21 @@ DO_PHYSICS:
 
 
 .macro DRAW_PLAYER	PLAYER, SPRITE
+	LDX PLAYER + Player::pos + Vector::xcoord
+	STX SPRITE +  0 + Sprite::xcoord
+	STX SPRITE +  8 + Sprite::xcoord
+	TXA
+	ADC #7
+	STA SPRITE +  4 + Sprite::xcoord
+	STA SPRITE + 12 + Sprite::xcoord
 
+	LDX PLAYER + Player::pos + Vector::ycoord
+	STX SPRITE +  0 + Sprite::ycoord
+	STX SPRITE +  4 + Sprite::ycoord
+	TXA
+	ADC #7
+	STA SPRITE +  8 + Sprite::ycoord
+	STA SPRITE + 12 + Sprite::ycoord
 
 .endmacro
 
