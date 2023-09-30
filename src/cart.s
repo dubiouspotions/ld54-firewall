@@ -29,7 +29,9 @@
 .segment "ZEROPAGE"
 frame_counter:	.RES 1
 fire_location: 	.RES 1
-fire_counter:		.RES 1
+fire_move_counter:		.RES 1
+fire_animation:	.RES 1
+fire_animation_counter:	.RES 1
 player_1:		.tag Player
 player_2:		.tag Player
 
@@ -208,13 +210,20 @@ RESPOND_TO_INPUT:
 	RTS
 
 MOVE_FIRE:
-	LDX fire_counter
+	LDX fire_move_counter
 	INX
-	STX fire_counter
-	CPX #30
-	BNE move_fire_done
+	STX fire_move_counter
+	; Set animation counter
+	LDX fire_animation
+	INX
+	STX fire_animation
+	CPX #3
+	BNE fire_update_location
 	LDX #$00
-	STX fire_counter
+	STX fire_animation
+fire_update_location: 
+	LDX #$00
+	STX fire_move_counter
 	LDX fire_location
 	INX
 	STX fire_location
@@ -269,6 +278,9 @@ DRAW:
 DRAW_FIRE:
 	LDX fire_location
 	STX mem_fire_sprites+3
+	LDA fire_animation
+	ADC #$40
+	STA mem_fire_sprites+1
 	LDX #255
 	TXA
 	SBC fire_location
