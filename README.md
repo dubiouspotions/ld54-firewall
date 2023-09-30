@@ -20,3 +20,10 @@ Setup based on [this video](https://www.youtube.com/watch?v=V5uWqdK92i0).
 make firewall # will generate build/firewall.nes
 make run      # will try to launch mesen with firewall.nes
 ```
+
+
+## Parse tilemap 
+```
+cd gamedata
+node parser.js level1.tmx
+```
