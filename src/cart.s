@@ -108,7 +108,7 @@ load_fire_sprite:
 	LDA fire_sprite_data, X
 	STA mem_fire_sprites, X
 	INX
-	CPX #4		; 4 bytes (4 bytes per sprite, 1 sprites total)
+	CPX #8		; 4 bytes (4 bytes per sprite, 1 sprites total)
 	BNE load_fire_sprite
 
 ; write our first level to the first nametable
@@ -190,6 +190,8 @@ UPDATE:
 DRAW:
 	; TODO: move the sprites to match player locations
 	; TODO: update the tilemap to match how far in the fire wall 
+	JSR DRAW_FIRE
+
 	NOP
 	RTS
 
@@ -198,8 +200,19 @@ RESPOND_TO_INPUT:
 	RTS
 
 MOVE_FIRE:
-
+	LDX fire_location
+	INX
+	STX fire_location
 	RTS
+
+DRAW_FIRE:
+	LDX fire_location
+	STX mem_fire_sprites+3
+	LDX #255
+	TXA
+	SBC fire_location
+	TAX
+	STX mem_fire_sprites+3+4
 
 DO_PHYSICS:
 	; TODO: Move characters based 
@@ -257,7 +270,8 @@ initial_sprite_data:
 	.byte $48, $11, %00000001, $28
 
 fire_sprite_data:
-	.byte $40, $00, %00000000, $40
+	.byte $48, $40, %00000010, $00
+	.byte $48, $40, %01000010, $FC
 
 level_tilemap:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$02,$03,$04,$05,$00,$00,$00,$00,$00,$00,$00,$06,$07,$00,$00,$00,$00,$00,$00,$00,$00,$00
