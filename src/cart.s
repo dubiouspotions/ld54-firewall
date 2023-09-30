@@ -22,12 +22,14 @@
 
 .segment "ZEROPAGE"
 frame_counter:	.RES 1
+fire_location: 	.RES 2
 player_1:		.tag Player
 player_2:		.tag Player
 
 
 ; CONSTANTS
 mem_sprites = $0200
+mem_fire_sprites = $0280
 
 .segment "STARTUP"
 
@@ -99,6 +101,15 @@ load_sprites:
 	INX
 	CPX #32		; 16 bytes (4 bytes per sprite, 8 sprites total)
 	BNE load_sprites
+
+; load fire sprite
+LDX #$00
+load_fire_sprite:
+	LDA fire_sprite_data, X
+	STA mem_fire_sprites, X
+	INX
+	CPX #4		; 4 bytes (4 bytes per sprite, 1 sprites total)
+	BNE load_fire_sprite
 
 ; write our first level to the first nametable
 	LDA #$20
@@ -172,6 +183,7 @@ GAME_LOOP:
 UPDATE:
 	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
+	JSR MOVE_FIRE
 	JSR EVALUATE_WINNING_CONDITION
 	RTS
 
@@ -183,6 +195,10 @@ DRAW:
 
 RESPOND_TO_INPUT:
 	; TODO: Listen to controllers and change acceleration/velocity
+	RTS
+
+MOVE_FIRE:
+
 	RTS
 
 DO_PHYSICS:
@@ -239,6 +255,9 @@ initial_sprite_data:
 	.byte $40, $01, %00000001, $28
 	.byte $48, $10, %00000001, $20
 	.byte $48, $11, %00000001, $28
+
+fire_sprite_data:
+	.byte $40, $00, %00000000, $40
 
 level_tilemap:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$02,$03,$04,$05,$00,$00,$00,$00,$00,$00,$00,$06,$07,$00,$00,$00,$00,$00,$00,$00,$00,$00
