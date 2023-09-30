@@ -30,7 +30,7 @@
 frame_counter:	.RES 1
 fire_location: 	.RES 1
 fire_move_counter:		.RES 1
-fire_animation:	.RES 1
+fire_animation_index:	.RES 1
 fire_animation_counter:	.RES 1
 player_1:		.tag Player
 player_2:		.tag Player
@@ -196,6 +196,7 @@ UPDATE:
 	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
 	JSR MOVE_FIRE
+	JSR ANIMATE_FIRE
 	JSR EVALUATE_WINNING_CONDITION
 	RTS
 
@@ -213,21 +214,32 @@ MOVE_FIRE:
 	LDX fire_move_counter
 	INX
 	STX fire_move_counter
-	; Set animation counter
-	LDX fire_animation
-	INX
-	STX fire_animation
-	CPX #3
-	BNE fire_update_location
-	LDX #$00
-	STX fire_animation
-fire_update_location: 
+	CPX #30
+	BNE move_fire_done ; Update fire every X frame
 	LDX #$00
 	STX fire_move_counter
 	LDX fire_location
 	INX
 	STX fire_location
 move_fire_done:
+	RTS
+
+ANIMATE_FIRE: 
+	LDX fire_animation_counter
+	INX
+	STX fire_animation_counter
+	CPX #10
+	BNE animate_fire_done ; update fire animation index every X frames
+	LDX #$00
+	STX fire_animation_counter
+	LDX fire_animation_index
+	INX
+	STX fire_animation_index
+	CPX #3
+	BNE animate_fire_done
+	LDX #$00
+	STX fire_animation_index
+animate_fire_done: 
 	RTS
 
 EVALUATE_WINNING_CONDITION:
@@ -278,7 +290,7 @@ DRAW:
 DRAW_FIRE:
 	LDX fire_location
 	STX mem_fire_sprites+3
-	LDA fire_animation
+	LDA fire_animation_index
 	ADC #$40
 	STA mem_fire_sprites+1
 	LDX #255
