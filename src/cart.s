@@ -28,7 +28,8 @@
 
 .segment "ZEROPAGE"
 frame_counter:	.RES 1
-fire_location: 	.RES 2
+fire_location: 	.RES 1
+fire_counter:		.RES 1
 player_1:		.tag Player
 player_2:		.tag Player
 
@@ -201,9 +202,17 @@ RESPOND_TO_INPUT:
 	RTS
 
 MOVE_FIRE:
+	LDX fire_counter
+	INX
+	STX fire_counter
+	CPX #30
+	BNE move_fire_done
+	LDX #$00
+	STX fire_counter
 	LDX fire_location
 	INX
 	STX fire_location
+move_fire_done:
 	RTS
 
 EVALUATE_WINNING_CONDITION:
