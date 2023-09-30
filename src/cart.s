@@ -19,6 +19,12 @@
 	vel		.tag Vector
 .endstruct
 
+.struct Sprite
+	ycoord	.byte
+	index	.byte
+	flags	.byte
+	xcoord	.byte
+.endstruct
 
 .segment "ZEROPAGE"
 frame_counter:	.RES 1
@@ -180,19 +186,14 @@ GAME_LOOP:
 
 	JMP GAME_LOOP
 
+
+; ----------- GAME LOGIC ---------
+
 UPDATE:
 	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
 	JSR MOVE_FIRE
 	JSR EVALUATE_WINNING_CONDITION
-	RTS
-
-DRAW:
-	; TODO: move the sprites to match player locations
-	; TODO: update the tilemap to match how far in the fire wall 
-	JSR DRAW_FIRE
-
-	NOP
 	RTS
 
 RESPOND_TO_INPUT:
@@ -205,6 +206,37 @@ MOVE_FIRE:
 	STX fire_location
 	RTS
 
+EVALUATE_WINNING_CONDITION:
+	; TODO: Check if a player is colliding with the fire, and then make the other player win
+	RTS
+
+; ----------- PHYSICS --------
+DO_PHYSICS:
+	; TODO: Move characters based 
+	RTS
+
+
+
+; ----------- DRAWING --------
+
+
+.macro DRAW_PLAYER	PLAYER, SPRITE
+
+
+.endmacro
+
+DRAW:
+	; Draw players
+	DRAW_PLAYER player_1, mem_sprites
+	DRAW_PLAYER player_2, mem_sprites + 4*4
+	
+
+	; TODO: update the tilemap to match how far in the fire wall 
+	JSR DRAW_FIRE
+
+	NOP
+	RTS
+
 DRAW_FIRE:
 	LDX fire_location
 	STX mem_fire_sprites+3
@@ -213,14 +245,6 @@ DRAW_FIRE:
 	SBC fire_location
 	TAX
 	STX mem_fire_sprites+3+4
-
-DO_PHYSICS:
-	; TODO: Move characters based 
-	RTS
-
-EVALUATE_WINNING_CONDITION:
-	; TODO: Check if a player is colliding with the fire, and then make the other player win
-	RTS
 
 ;;;;;; UTILITIES
 
