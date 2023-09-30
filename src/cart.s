@@ -7,10 +7,27 @@
 	.byte $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00
 
+; Type definitions
+
+.struct Vector
+	xcoord	.word
+	ycoord	.word
+.endstruct
+
+.struct Player
+	pos		.tag Vector
+	vel		.tag Vector
+.endstruct
+
+
 .segment "ZEROPAGE"
 frame_counter:	.RES 1
+player_1:		.tag Player
+player_2:		.tag Player
 
-; GLOBALS
+
+; CONSTANTS
+mem_sprites = $0200
 
 .segment "STARTUP"
 
@@ -78,9 +95,9 @@ load_palettes:
 	LDX #$00
 load_sprites:
 	LDA initial_sprite_data, X
-	STA $0200, X
+	STA mem_sprites, X
 	INX
-	CPX #16		; 16 bytes (4 bytes per sprite, 4 sprites total)
+	CPX #32		; 16 bytes (4 bytes per sprite, 8 sprites total)
 	BNE load_sprites
 
 ; write our first level to the first nametable
@@ -212,10 +229,16 @@ initial_sprite_data:
 ;					 ||+------ Priority (0: in front of background; 1: behind background)
 ;					 |||+++--- Unimplemented (read 0)
 ;					 ||||||++- Palette (4 to 7) of sprite
-	.byte $40, $00, %00000001, $40
-	.byte $40, $01, %00000001, $48
-	.byte $48, $10, %00000001, $40
-	.byte $48, $11, %00000001, $48
+; player 1
+	.byte $40, $00, %00000000, $40
+	.byte $40, $01, %00000000, $48
+	.byte $48, $10, %00000000, $40
+	.byte $48, $11, %00000000, $48
+; player 2
+	.byte $40, $00, %00000001, $20
+	.byte $40, $01, %00000001, $28
+	.byte $48, $10, %00000001, $20
+	.byte $48, $11, %00000001, $28
 
 level_tilemap:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$02,$03,$04,$05,$00,$00,$00,$00,$00,$00,$00,$06,$07,$00,$00,$00,$00,$00,$00,$00,$00,$00
