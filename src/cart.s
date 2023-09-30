@@ -8,7 +8,7 @@
 	.byte $00, $00, $00, $00, $00
 
 .segment "ZEROPAGE"
-shroom_x:	.RES 1
+frame_counter:	.RES 1
 
 ; GLOBALS
 
@@ -32,9 +32,7 @@ RESET:
 	STX $2000
 	STX $2001
 
-wait_for_vblank:
-	BIT $2002
-	BPL wait_for_vblank
+	JSR wait_for_vblank
 
 	TXA
 clear_ram: 			; $0000 - $07FF
@@ -55,9 +53,7 @@ clear_ram: 			; $0000 - $07FF
 	CPX #$00
 	BNE clear_ram
 
-wait_for_vblank_again:
-	BIT $2002
-	BPL wait_for_vblank_again
+	JSR wait_for_vblank
 
 	; Tell PPU to use $0200 as sprite DMA
 	LDA #$02
@@ -148,23 +144,53 @@ load_tilemap_color:
 	STA $2001
 
 
+GAME_LOOP:
+	JSR UPDATE
+
+	JSR wait_for_vblank
+	JSR DRAW
+
+	JMP GAME_LOOP
+
+UPDATE:
+	JSR RESPOND_TO_INPUT
+	JSR DO_PHYSICS
+	JSR EVALUATE_WINNING_CONDITION
+	RTS
+
+DRAW:
+	; TODO: move the sprites to match player locations
+	; TODO: update the tilemap to match how far in the fire wall 
+	NOP
+	RTS
+
+RESPOND_TO_INPUT:
+	; TODO: Listen to controllers and change acceleration/velocity
+	RTS
+
+DO_PHYSICS:
+	; TODO: Move characters based 
+	RTS
+
+EVALUATE_WINNING_CONDITION:
+	; TODO: Check if a player is colliding with the fire, and then make the other player win
+	RTS
+
+;;;;;; UTILITIES
+
+wait_for_vblank:
+	BIT $2002
+	BPL wait_for_vblank
+	RTS
 
 
-infiniteloop:
-	jmp infiniteloop
-
+;;;;;; INTERRUPTS
 
 NMI:
-	LDX shroom_x
+	LDX frame_counter
 	INX
-	STX shroom_x
-	STX $0203
-	STX $020B
-	TXA
-	ADC #7
-	STA $0207
-	STA $020F
-
+	STX frame_counter
+	
 
 	LDA #$02		; Load sprite DMA range to PPU
 	STA $4014
