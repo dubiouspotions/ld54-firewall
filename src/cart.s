@@ -17,6 +17,7 @@
 .struct Player
 	pos		.tag Vector
 	vel		.tag Vector
+	buttons	.byte
 .endstruct
 
 .struct Sprite
@@ -39,6 +40,18 @@ player_2:		.tag Player
 ; CONSTANTS
 mem_sprites = $0200
 mem_fire_sprites = $0280
+mem_JOYPAD1 = $4016
+mem_JOYPAD2 = $4017
+
+BTN_RIGHT   = %00000001
+BTN_LEFT    = %00000010
+BTN_DOWN    = %00000100
+BTN_UP      = %00001000
+BTN_START   = %00010000
+BTN_SELECT  = %00100000
+BTN_B       = %01000000
+BTN_A       = %10000000
+
 
 .segment "STARTUP"
 
@@ -200,15 +213,71 @@ UPDATE:
 	JSR EVALUATE_WINNING_CONDITION
 	RTS
 
+
+.macro HANDLE_PLAYER_INPUT	PLAYER
+.scope
+	LDA PLAYER + Player::buttons
+	AND #BTN_LEFT
+	BEQ check_right
+		DEC PLAYER + Player::pos + Vector::xcoord
+check_right:
+	LDA PLAYER + Player::buttons
+	AND #BTN_RIGHT
+	BEQ check_up
+		INC PLAYER + Player::pos + Vector::xcoord
+check_up:
+	LDA PLAYER + Player::buttons
+	AND #BTN_UP
+	BEQ check_down
+		DEC PLAYER + Player::pos + Vector::ycoord
+check_down:
+	LDA PLAYER + Player::buttons
+	AND #BTN_DOWN
+	BEQ done
+		INC PLAYER + Player::pos + Vector::ycoord
+done:
+.endscope
+.endmacro
+
+; https://famicom.party/book/16-input/
 RESPOND_TO_INPUT:
-	LDX player_1 + Player::pos + Vector::xcoord
-	INX
-	STX player_1 + Player::pos + Vector::xcoord
-	LDX player_1 + Player::pos + Vector::ycoord
-	INX
-	STX player_1 + Player::pos + Vector::ycoord
-	; TODO: Listen to controllers and change acceleration/velocity
+	JSR READ_JOYPADS
+	HANDLE_PLAYER_INPUT player_1
+	HANDLE_PLAYER_INPUT player_2
+	
 	RTS
+
+; https://www.nesdev.org/wiki/Controller_reading_code
+READ_JOYPADS:
+    lda #$01
+    ; While the strobe bit is set, buttons will be continuously reloaded.
+    ; This means that reading from JOYPAD1 will only return the state of the
+    ; first button: button A.
+    sta mem_JOYPAD1
+    sta player_1 + Player::buttons
+    lsr a        ; now A is 0
+    ; By storing 0 into JOYPAD1, the strobe bit is cleared and the reloading stops.
+    ; This allows all 8 buttons (newly reloaded) to be read from JOYPAD1.
+    sta mem_JOYPAD1
+joy1_loop:
+    lda mem_JOYPAD1
+    lsr a	       ; bit 0 -> Carry
+    rol player_1 + Player::buttons  ; Carry -> bit 0; bit 7 -> Carry
+    bcc joy1_loop
+    rts
+
+	; let's do it again for joy2
+	lda #$01
+    sta mem_JOYPAD2
+    sta player_2 + Player::buttons
+    lsr a
+    sta mem_JOYPAD2
+joy2_loop:
+    lda mem_JOYPAD2
+    lsr a
+    rol player_2 + Player::buttons
+    bcc joy2_loop
+    rts
 
 MOVE_FIRE:
 	LDX fire_move_counter
