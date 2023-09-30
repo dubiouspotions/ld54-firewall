@@ -7,6 +7,7 @@ print-%  : ; @echo $* = $($*)
 clean:
 	rm -rf build
 	mkdir -p build
+	touch build/.dummy
 
 SOURCES = \
 	src/cart.s

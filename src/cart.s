@@ -1,14 +1,16 @@
 .segment "HEADER"
 	.byte "NES"
 	.byte $1A
-	.byte $01 ; amount of PRG ROM in 16K units
+	.byte $02 ; amount of PRG ROM in 16K units
 	.byte $01 ; amount of CHR ROM in 8K units
 	.byte $00 ; mapper and mirroring
 	.byte $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00
 
 .segment "ZEROPAGE"
-VAR:	.RES 1 ; reserve one byte
+shroom_x:	.RES 1
+
+; GLOBALS
 
 .segment "STARTUP"
 
@@ -101,6 +103,17 @@ infiniteloop:
 
 
 NMI:
+	LDX shroom_x
+	INX
+	STX shroom_x
+	STX $0203
+	STX $020B
+	TXA
+	ADC #7
+	STA $0207
+	STA $020F
+
+
 	LDA #$02		; Load sprite DMA range to PPU
 	STA $4014
 
