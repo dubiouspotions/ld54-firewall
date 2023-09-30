@@ -201,13 +201,10 @@ NMI:
 ; Data segment
 
 palette_data:
-	; Background palettes
-	; 	  tileset color 1		unused					fire					unused
-	.byte $16, $1D, $26, $37, 	$00, $00, $00, $00, 	$05, $05, $26, $38, 	$00, $00, $00, $00
-
-	; Sprite palettes
-	;	  player 1				player 2				fire					unused
-	.byte $0F, $11, $22, $33, 	$0F, $15, $25, $35, 	$00, $05, $26, $38, 	$00, $00, $00, $00
+	.incbin "src/palette.dat"
+	; palette contents:
+	; background:  tileset color 1		unused					fire					unused
+	; foreground:  player 1				player 2				fire					unused
 
 initial_sprite_data:
 ;					 +-------- Flip sprite vertically
@@ -215,10 +212,10 @@ initial_sprite_data:
 ;					 ||+------ Priority (0: in front of background; 1: behind background)
 ;					 |||+++--- Unimplemented (read 0)
 ;					 ||||||++- Palette (4 to 7) of sprite
-	.byte $40, $00, %00000000, $40
-	.byte $40, $01, %00000000, $48
-	.byte $48, $10, %00000000, $40
-	.byte $48, $11, %00000000, $48
+	.byte $40, $00, %00000001, $40
+	.byte $40, $01, %00000001, $48
+	.byte $48, $10, %00000001, $40
+	.byte $48, $11, %00000001, $48
 
 level_tilemap:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$02,$03,$04,$05,$00,$00,$00,$00,$00,$00,$00,$06,$07,$00,$00,$00,$00,$00,$00,$00,$00,$00
