@@ -179,7 +179,7 @@ DRAW_FIRE:
 		continue_draw_left_fire:
 		INY 
 		; Settings
-		LDA #%00000010
+		LDA #%01000010
 		STA mem_fire_sprites, Y
 		INY
 		; X Value
@@ -213,8 +213,7 @@ DRAW_FIRE:
 		STA mem_fire_sprites, Y
 		INY
 		; X Value
-		LDA	#$F8
-		SBC fire_location_left
+		LDA	fire_location_right
 		STA mem_fire_sprites, Y
 		INY
 		PLA
