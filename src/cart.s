@@ -73,7 +73,7 @@ RESET:
 	STX $2000
 	STX $2001
 
-	JSR wait_for_vblank
+	JSR WAIT_FOR_VBLANK
 
 	TXA
 clear_ram: 			; $0000 - $07FF
@@ -94,7 +94,7 @@ clear_ram: 			; $0000 - $07FF
 	CPX #$00
 	BNE clear_ram
 
-	JSR wait_for_vblank
+	JSR WAIT_FOR_VBLANK
 
 	; Tell PPU to use $0200 as sprite DMA
 	LDA #$02
@@ -197,7 +197,7 @@ load_tilemap_color:
 GAME_LOOP:
 	JSR UPDATE
 
-	JSR wait_for_vblank
+	JSR WAIT_FOR_VBLANK
 	JSR DRAW
 
 	JMP GAME_LOOP
@@ -264,7 +264,6 @@ joy1_loop:
     lsr a	       ; bit 0 -> Carry
     rol player_1 + Player::buttons  ; Carry -> bit 0; bit 7 -> Carry
     bcc joy1_loop
-    rts
 
 	; let's do it again for joy2
 	lda #$01
@@ -277,6 +276,7 @@ joy2_loop:
     lsr a
     rol player_2 + Player::buttons
     bcc joy2_loop
+
     rts
 
 MOVE_FIRE:
@@ -370,9 +370,9 @@ DRAW_FIRE:
 
 ;;;;;; UTILITIES
 
-wait_for_vblank:
+WAIT_FOR_VBLANK:
 	BIT $2002
-	BPL wait_for_vblank
+	BPL WAIT_FOR_VBLANK
 	RTS
 
 
