@@ -220,3 +220,4 @@ DRAW_FIRE:
 		PLA
 		CPY #128
 		BNE draw_right_fire
+	RTS

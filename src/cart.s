@@ -57,7 +57,7 @@ BTN_A       = %10000000
 frame_counter:			.RES 1
 player_1:				.tag Player
 player_2:				.tag Player
-
+sleeping:				.RES 1
 
 .segment "BSS"
 current_scene: 			.RES 1
@@ -158,8 +158,10 @@ load_palettes:
 GAME_LOOP:
 	JSR UPDATE
 
-	JSR WAIT_FOR_VBLANK
-	JSR DRAW
+	INC sleeping
+sleep:
+	LDA sleeping
+	BNE sleep
 
 	JMP GAME_LOOP
 
@@ -199,7 +201,6 @@ done:
 
 ; https://famicom.party/book/16-input/
 RESPOND_TO_INPUT:
-	JSR READ_JOYPADS
 	HANDLE_PLAYER_INPUT player_1
 	HANDLE_PLAYER_INPUT player_2
 	
@@ -223,7 +224,7 @@ joy1_loop:
     rol player_1 + Player::buttons  ; Carry -> bit 0; bit 7 -> Carry
     bcc joy1_loop
 
-	RTS
+
 	; let's do it again for joy2
 	lda #$01
     sta mem_JOYPAD2
@@ -285,6 +286,13 @@ WAIT_FOR_VBLANK:
 ;;;;;; INTERRUPTS
 
 NMI:
+	PHP
+	PHA
+	TXA
+	PHA
+	TYA
+	PHA
+
 	LDX frame_counter
 	INX
 	STX frame_counter
@@ -292,6 +300,21 @@ NMI:
 
 	LDA #$02		; Load sprite DMA range to PPU
 	STA $4014
+
+	JSR DRAW
+
+	JSR READ_JOYPADS
+
+	; wake game loop now that we're done with vsync work
+	LDA #$00
+	STA sleeping
+
+	PLA
+	TAY
+	PLA
+	TAX
+	PLA
+	PLP
 
 	RTI
 
