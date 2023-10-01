@@ -67,6 +67,7 @@ fire_location_right: .RES 1
 fire_move_counter:		.RES 1
 fire_animation_index:	.RES 1
 fire_animation_counter:	.RES 1
+logo_counter:			.RES 1
 
 indirect_ptr:			.RES 2
 indirect_nmi_ptr:	.RES 2
@@ -315,7 +316,7 @@ NMI:
 	STX $2001
 	SEI
 	JSR LOAD_SCENE
-	CLI
+	
 	
 	LDA #$00			; reset scroll
 	STA $2005
@@ -324,6 +325,7 @@ NMI:
 	STA $2000
 	LDA #%00011110		; please draw sprites and background
 	STA $2001
+	CLI
 nmi_continue:
 
 	JSR DRAW

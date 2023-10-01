@@ -114,7 +114,7 @@ MOVE_FIRE:
 	LDX fire_move_counter
 	INX
 	STX fire_move_counter
-	CPX #30
+	CPX #254
 	BNE move_fire_done ; Update fire every X frame
 	LDX #$00
 	STX fire_move_counter

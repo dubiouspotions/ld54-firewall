@@ -48,6 +48,14 @@ load_logo_tilemap_color:
 	RTS
 
 UPDATE_LOGO:
+  LDX logo_counter
+  INX
+  STX logo_counter
+  CPX #100
+  BNE continue_to_show_logo
+  LDX #Scenes::mainmenu
+  STX wanted_scene
+  continue_to_show_logo:
 	RTS
 
 
