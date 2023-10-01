@@ -250,15 +250,8 @@ joy2_loop:
 
 
 .macro DRAW_PLAYER	PLAYER, SPRITE
-	LDX PLAYER + Player::pos + Vector::xcoord
-	STX SPRITE +  0 + Sprite::xcoord
-	STX SPRITE +  8 + Sprite::xcoord
-	TXA
-	CLC
-	ADC #7
-	STA SPRITE +  4 + Sprite::xcoord
-	STA SPRITE + 12 + Sprite::xcoord
-
+.scope
+; draw y coordinate same always
 	LDX PLAYER + Player::pos + Vector::ycoord
 	STX SPRITE +  0 + Sprite::ycoord
 	STX SPRITE +  4 + Sprite::ycoord
@@ -268,6 +261,46 @@ joy2_loop:
 	STA SPRITE +  8 + Sprite::ycoord
 	STA SPRITE + 12 + Sprite::ycoord
 
+; if facing right, jump down and draw flipped
+	LDA PLAYER + Player::flags
+	AND #%01000000
+	BNE draw_flipped
+
+	LDX PLAYER + Player::pos + Vector::xcoord
+	STX SPRITE +  0 + Sprite::xcoord
+	STX SPRITE +  8 + Sprite::xcoord
+	TXA
+	CLC
+	ADC #7
+	STA SPRITE +  4 + Sprite::xcoord
+	STA SPRITE + 12 + Sprite::xcoord
+
+	LDA SPRITE +  0 + Sprite::flags
+	AND #%10111111
+	STA SPRITE +  0 + Sprite::flags
+	STA SPRITE +  4 + Sprite::flags
+	STA SPRITE +  8 + Sprite::flags
+	STA SPRITE + 12 + Sprite::flags
+
+	jmp draw_done
+draw_flipped:
+	LDX PLAYER + Player::pos + Vector::xcoord
+	STX SPRITE +  4 + Sprite::xcoord
+	STX SPRITE +  12 + Sprite::xcoord
+	TXA
+	CLC
+	ADC #7
+	STA SPRITE +  0 + Sprite::xcoord
+	STA SPRITE +  8 + Sprite::xcoord
+
+	LDA SPRITE +  0 + Sprite::flags
+	ORA #%01000000
+	STA SPRITE +  0 + Sprite::flags
+	STA SPRITE +  4 + Sprite::flags
+	STA SPRITE +  8 + Sprite::flags
+	STA SPRITE + 12 + Sprite::flags
+draw_done:
+.endscope
 .endmacro
 
 DRAW:
