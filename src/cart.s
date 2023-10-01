@@ -326,6 +326,15 @@ load_tilemap_color:
 	CPX #64
 	BNE load_tilemap_color
 
+; and then initialize game data
+	LDA #100
+	STA player_1 + Player::pos + Vector::xcoord
+	LDA #140
+	STA player_2 + Player::pos + Vector::xcoord
+	LDA #$8F
+	STA player_1 - Player::pos + Vector::ycoord
+	STA player_2 - Player::pos + Vector::ycoord
+	
 	RTS
 
 UPDATE_LEVEL:
