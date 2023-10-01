@@ -331,10 +331,10 @@ animate_fire_done:
 
 
 .macro IS_PLAYER_IN_LEFT_FIRE	PLAYER
-	LDA PLAYER + Player::pos + Vector::xcoord 
+	LDA fire_location_left
 	ADC #8 ; width of the fire sprite
-	CMP fire_location_left
-	BPL not_dead_left
+	CMP PLAYER + Player::pos + Vector::xcoord 
+	BMI not_dead_left ; If minus, not dead.
 	LDY PLAYER + Player::dead
 	INY
 	STY PLAYER + Player::dead
@@ -353,13 +353,15 @@ animate_fire_done:
 .endmacro
 
 .macro IS_PLAYER_DEAD	PLAYER
+.scope
 	IS_PLAYER_IN_LEFT_FIRE PLAYER
-	IS_PLAYER_IN_RIGHT_FIRE PLAYER
+	; IS_PLAYER_IN_RIGHT_FIRE PLAYER
+.endscope
 .endmacro
 
 EVALUATE_WINNING_CONDITION:
 	IS_PLAYER_DEAD player_1
-	IS_PLAYER_DEAD player_2
+	; IS_PLAYER_DEAD player_2
 	RTS
 
 
