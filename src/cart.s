@@ -370,7 +370,7 @@ scene_drawers:
 palette_data:
 	.incbin "src/palette.dat"
 	; palette contents:
-	; background:  tileset color 1		unused					fire					unused
+	; background:  ground				menus					burnt bg				background
 	; foreground:  player 1				player 2				fire					unused
 
 initial_sprite_data:
