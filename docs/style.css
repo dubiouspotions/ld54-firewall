@@ -2,7 +2,7 @@
 body {
   text-align: center;
   background-color: #000;
-  color:#999;
+  color:#777;
   font-family: monospace;
   font-family: 'Press Start 2P';
   line-height: 1.7;
@@ -20,7 +20,7 @@ body {
   justify-content: center;
 }
 a {
-  color:#777;
+  color:#999;
 }
 
 pre {
@@ -51,4 +51,12 @@ pre {
   image-rendering: crisp-edges;
   image-rendering: pixelated;
   border:solid 1px #333;
+}
+
+.controls {
+  margin:20px 10px 10px;
+  padding:10px 20px;
+  border-radius: 15px;
+  border:solid 1px #333;
+  color:#aaa;
 }
