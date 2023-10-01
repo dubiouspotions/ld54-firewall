@@ -265,6 +265,7 @@ joy1_loop:
     rol player_1 + Player::buttons  ; Carry -> bit 0; bit 7 -> Carry
     bcc joy1_loop
 
+	RTS
 	; let's do it again for joy2
 	lda #$01
     sta mem_JOYPAD2
