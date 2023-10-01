@@ -27,22 +27,20 @@
 	xcoord	.byte
 .endstruct
 
-.segment "ZEROPAGE"
-frame_counter:	.RES 1
-fire_location: 	.RES 1
-fire_move_counter:		.RES 1
-fire_animation_index:	.RES 1
-fire_animation_counter:	.RES 1
-player_1:		.tag Player
-player_2:		.tag Player
+.enum	Scenes
+	logo
+	mainmenu
+	level
+	win
+.endenum
 
-
-; CONSTANTS
+; Memory address constants
 mem_sprites = $0200
 mem_fire_sprites = $0280
 mem_JOYPAD1 = $4016
 mem_JOYPAD2 = $4017
 
+; Other constants
 BTN_RIGHT   = %00000001
 BTN_LEFT    = %00000010
 BTN_DOWN    = %00000100
@@ -52,6 +50,23 @@ BTN_SELECT  = %00100000
 BTN_B       = %01000000
 BTN_A       = %10000000
 
+; ---------- ZERO PAGE ------------
+
+.segment "ZEROPAGE"
+current_scene: 			.RES 1
+wanted_scene: 			.RES 1
+frame_counter:			.RES 1
+fire_location: 			.RES 1
+fire_move_counter:		.RES 1
+fire_animation_index:	.RES 1
+fire_animation_counter:	.RES 1
+player_1:				.tag Player
+player_2:				.tag Player
+
+
+
+
+; ---------- CODE ------------
 
 .segment "STARTUP"
 
@@ -129,6 +144,11 @@ load_sprites:
 	STA $2006
 	LDA #$00
 	STA $2006
+
+; start out on the game scene for now
+	LDA Scenes::level
+	STA wanted_scene
+	STA current_scene
 
 	LDX #$00
 load_tilemap_p1:
