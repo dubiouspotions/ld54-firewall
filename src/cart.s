@@ -18,6 +18,7 @@
 	pos		.tag Vector
 	vel		.tag Vector
 	buttons	.byte
+	dead	.byte
 .endstruct
 
 .struct Sprite
@@ -56,7 +57,8 @@ BTN_A       = %10000000
 current_scene: 			.RES 1
 wanted_scene: 			.RES 1
 frame_counter:			.RES 1
-fire_location: 			.RES 1
+fire_location_left: .RES 1
+fire_location_right: .RES 1
 fire_move_counter:		.RES 1
 fire_animation_index:	.RES 1
 fire_animation_counter:	.RES 1
@@ -299,9 +301,12 @@ MOVE_FIRE:
 	BNE move_fire_done ; Update fire every X frame
 	LDX #$00
 	STX fire_move_counter
-	LDX fire_location
+	LDX fire_location_left
 	INX
-	STX fire_location
+	STX fire_location_left
+	LDA	#$F8
+	SBC fire_location_left
+	STA fire_location_right
 move_fire_done:
 	RTS
 
@@ -323,9 +328,40 @@ ANIMATE_FIRE:
 animate_fire_done: 
 	RTS
 
+
+
+.macro IS_PLAYER_IN_LEFT_FIRE	PLAYER
+	LDA PLAYER + Player::pos + Vector::xcoord 
+	ADC #8 ; width of the fire sprite
+	CMP fire_location_left
+	BPL not_dead_left
+	LDY PLAYER + Player::dead
+	INY
+	STY PLAYER + Player::dead
+	not_dead_left:
+.endmacro
+
+.macro IS_PLAYER_IN_RIGHT_FIRE	PLAYER
+	LDA PLAYER + Player::pos + Vector::xcoord 
+	ADC #8 ; width of the player sprite
+	CMP fire_location_right
+	BMI not_dead_right
+	LDY PLAYER + Player::dead
+	INY
+	STY PLAYER + Player::dead
+	not_dead_right:
+.endmacro
+
+.macro IS_PLAYER_DEAD	PLAYER
+	IS_PLAYER_IN_LEFT_FIRE PLAYER
+	IS_PLAYER_IN_RIGHT_FIRE PLAYER
+.endmacro
+
 EVALUATE_WINNING_CONDITION:
-	; TODO: Check if a player is colliding with the fire, and then make the other player win
+	IS_PLAYER_DEAD player_1
+	IS_PLAYER_DEAD player_2
 	RTS
+
 
 ; ----------- PHYSICS --------
 DO_PHYSICS:
@@ -393,7 +429,7 @@ DRAW_FIRE:
 		STA mem_fire_sprites, Y
 		INY
 		; X Value
-		LDA	fire_location
+		LDA	fire_location_left
 		STA mem_fire_sprites, Y
 		INY
 		PLA
@@ -424,7 +460,7 @@ DRAW_FIRE:
 		INY
 		; X Value
 		LDA	#$F8
-		SBC fire_location
+		SBC fire_location_left
 		STA mem_fire_sprites, Y
 		INY
 		PLA
