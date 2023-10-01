@@ -136,9 +136,8 @@ load_palettes:
 ; start out on the game scene for now
 	LDA #Scenes::level
 	STA wanted_scene
+	LDA #$FF ; current scene is invalid = please load wanted scene on next draw
 	STA current_scene
-
-	JSR INITIALIZE_LEVEL
 
 ; reset scroll
 	LDA #$00
@@ -164,6 +163,16 @@ sleep:
 	BNE sleep
 
 	JMP GAME_LOOP
+
+; ------------ SCENE MANAGEMENT ------------
+
+LOAD_SCENE:
+	; TODO: find the initializer for the corret scene and call it
+	JSR INITIALIZE_LEVEL
+
+	LDX wanted_scene
+	STX current_scene
+	RTS
 
 
 ; ----------- GAME LOGIC ---------
@@ -293,13 +302,34 @@ NMI:
 	TYA
 	PHA
 
+; General housekeeping
 	LDX frame_counter
 	INX
 	STX frame_counter
-	
 
 	LDA #$02		; Load sprite DMA range to PPU
 	STA $4014
+
+; Load data for wanted scene, if it's not already loaded
+	LDX current_scene
+	CPX wanted_scene
+	BEQ nmi_continue
+
+	LDX #$00 			; PPU, please hold while you receive new data.
+	STX $2000
+	STX $2001
+	SEI
+	JSR LOAD_SCENE
+	CLI
+	
+	LDA #$00			; reset scroll
+	STA $2005
+	STA $2005
+	LDA #%10010000 		; please generate VBLANK NMIs
+	STA $2000
+	LDA #%00011110		; please draw sprites and background
+	STA $2001
+nmi_continue:
 
 	JSR DRAW
 
@@ -320,6 +350,25 @@ NMI:
 
 
 .segment "RODATA"
+
+scene_initializers:
+	.word 0
+	.word 0
+	.word INITIALIZE_LEVEL 
+	.word 0
+
+scene_updaters:
+	.word 0
+	.word 0
+	.word UPDATE_LEVEL
+	.word 0
+
+scene_drawers:
+	.word 0
+	.word 0
+	.word DRAW_LEVEL
+	.word 0
+
 
 palette_data:
 	.incbin "src/palette.dat"
