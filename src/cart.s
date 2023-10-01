@@ -53,22 +53,22 @@ BTN_A       = %10000000
 ; ---------- ZERO PAGE ------------
 
 .segment "ZEROPAGE"
-current_scene: 			.RES 1
-wanted_scene: 			.RES 1
 frame_counter:			.RES 1
-fire_location: 			.RES 1
-fire_move_counter:		.RES 1
-fire_animation_index:	.RES 1
-fire_animation_counter:	.RES 1
 player_1:				.tag Player
 player_2:				.tag Player
 
 
-
+.segment "BSS"
+current_scene: 			.RES 1
+wanted_scene: 			.RES 1
+fire_location: 			.RES 1
+fire_move_counter:		.RES 1
+fire_animation_index:	.RES 1
+fire_animation_counter:	.RES 1
 
 ; ---------- CODE ------------
 
-.segment "STARTUP"
+.segment "CODE"
 
 RESET:
 	SEI 		; turn off interrupts
@@ -454,7 +454,7 @@ NMI:
 	RTI
 
 
-; Data segment
+.segment "RODATA"
 
 palette_data:
 	.incbin "src/palette.dat"
@@ -497,5 +497,5 @@ level_tilemap_palette:
 .segment "VECTORS"
 	.word NMI
 	.word RESET
-.segment "CHARS"
+.segment "CHR"
 	.incbin "src/rom.chr"
