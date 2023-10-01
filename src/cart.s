@@ -371,7 +371,7 @@ palette_data:
 	.incbin "src/palette.dat"
 	; palette contents:
 	; background:  ground				menus					burnt bg				background
-	; foreground:  player 1				player 2				fire					unused
+	; foreground:  player 1				player 2				fire					burnt player
 
 initial_sprite_data:
 ;					 +-------- Flip sprite vertically
