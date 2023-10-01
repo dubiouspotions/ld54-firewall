@@ -132,65 +132,13 @@ load_palettes:
 	CPX #32
 	BNE load_palettes
 
-; write our initial sprite data to the DMA'd region for OAM
-	LDX #$00
-load_sprites:
-	LDA initial_sprite_data, X
-	STA mem_sprites, X
-	INX
-	CPX #32		; 16 bytes (4 bytes per sprite, 8 sprites total)
-	BNE load_sprites
-
-; write our first level to the first nametable
-	LDA #$20
-	STA $2006
-	LDA #$00
-	STA $2006
 
 ; start out on the game scene for now
-	LDA Scenes::level
+	LDA #Scenes::level
 	STA wanted_scene
 	STA current_scene
 
-	LDX #$00
-load_tilemap_p1:
-	LDA level_tilemap, X
-	STA $2007
-	INX
-	CPX #0
-	BNE load_tilemap_p1
-load_tilemap_p2:
-	LDA level_tilemap+256, X
-	STA $2007
-	INX
-	CPX #0
-	BNE load_tilemap_p2
-load_tilemap_p3:
-	LDA level_tilemap+512, X
-	STA $2007
-	INX
-	CPX #0
-	BNE load_tilemap_p3
-load_tilemap_p4:
-	LDA level_tilemap+768, X
-	STA $2007
-	INX
-	CPX #0
-	BNE load_tilemap_p4
-
-; write our first level's palette data to the first nametable
-	LDA #$23
-	STA $2006
-	LDA #$C0
-	STA $2006
-	LDX #$00
-load_tilemap_color:
-	LDA level_tilemap_palette, X
-	STA $2007
-	INX
-	CPX #64
-	BNE load_tilemap_color
-
+	JSR INITIALIZE_LEVEL
 
 ; reset scroll
 	LDA #$00
@@ -220,10 +168,7 @@ GAME_LOOP:
 
 UPDATE:
 	JSR RESPOND_TO_INPUT
-	JSR DO_PHYSICS
-	JSR MOVE_FIRE
-	JSR ANIMATE_FIRE
-	JSR EVALUATE_WINNING_CONDITION
+	JSR UPDATE_LEVEL
 	RTS
 
 
@@ -292,6 +237,105 @@ joy2_loop:
     bcc joy2_loop
 
     rts
+
+; ----------- DRAWING --------
+
+
+.macro DRAW_PLAYER	PLAYER, SPRITE
+	LDX PLAYER + Player::pos + Vector::xcoord
+	STX SPRITE +  0 + Sprite::xcoord
+	STX SPRITE +  8 + Sprite::xcoord
+	TXA
+	ADC #7
+	STA SPRITE +  4 + Sprite::xcoord
+	STA SPRITE + 12 + Sprite::xcoord
+
+	LDX PLAYER + Player::pos + Vector::ycoord
+	STX SPRITE +  0 + Sprite::ycoord
+	STX SPRITE +  4 + Sprite::ycoord
+	TXA
+	ADC #7
+	STA SPRITE +  8 + Sprite::ycoord
+	STA SPRITE + 12 + Sprite::ycoord
+
+.endmacro
+
+DRAW:
+	; Draw players
+	DRAW_PLAYER player_1, mem_sprites
+	DRAW_PLAYER player_2, mem_sprites + 4*4
+	
+	JSR DRAW_LEVEL
+
+	RTS
+
+; ------------ SCENE: LEVEL --------------------
+
+INITIALIZE_LEVEL:
+; write our initial sprite data to the DMA'd region for OAM
+	LDX #$00
+load_sprites:
+	LDA initial_sprite_data, X
+	STA mem_sprites, X
+	INX
+	CPX #32		; 16 bytes (4 bytes per sprite, 8 sprites total)
+	BNE load_sprites
+
+; write our first level to the first nametable
+	LDA #$20
+	STA $2006
+	LDA #$00
+	STA $2006
+	
+	LDX #$00
+load_tilemap_p1:
+	LDA level_tilemap, X
+	STA $2007
+	INX
+	CPX #0
+	BNE load_tilemap_p1
+load_tilemap_p2:
+	LDA level_tilemap+256, X
+	STA $2007
+	INX
+	CPX #0
+	BNE load_tilemap_p2
+load_tilemap_p3:
+	LDA level_tilemap+512, X
+	STA $2007
+	INX
+	CPX #0
+	BNE load_tilemap_p3
+load_tilemap_p4:
+	LDA level_tilemap+768, X
+	STA $2007
+	INX
+	CPX #0
+	BNE load_tilemap_p4
+
+; write our first level's palette data to the first nametable
+	LDA #$23
+	STA $2006
+	LDA #$C0
+	STA $2006
+	LDX #$00
+load_tilemap_color:
+	LDA level_tilemap_palette, X
+	STA $2007
+	INX
+	CPX #64
+	BNE load_tilemap_color
+
+	RTS
+
+UPDATE_LEVEL:
+	JSR DO_PHYSICS
+	JSR MOVE_FIRE
+	JSR ANIMATE_FIRE
+	JSR EVALUATE_WINNING_CONDITION
+
+	RTS
+
 
 MOVE_FIRE:
 	LDX fire_move_counter
@@ -371,40 +415,12 @@ DO_PHYSICS:
 	RTS
 
 
-
-; ----------- DRAWING --------
-
-
-.macro DRAW_PLAYER	PLAYER, SPRITE
-	LDX PLAYER + Player::pos + Vector::xcoord
-	STX SPRITE +  0 + Sprite::xcoord
-	STX SPRITE +  8 + Sprite::xcoord
-	TXA
-	ADC #7
-	STA SPRITE +  4 + Sprite::xcoord
-	STA SPRITE + 12 + Sprite::xcoord
-
-	LDX PLAYER + Player::pos + Vector::ycoord
-	STX SPRITE +  0 + Sprite::ycoord
-	STX SPRITE +  4 + Sprite::ycoord
-	TXA
-	ADC #7
-	STA SPRITE +  8 + Sprite::ycoord
-	STA SPRITE + 12 + Sprite::ycoord
-
-.endmacro
-
-DRAW:
-	; Draw players
-	DRAW_PLAYER player_1, mem_sprites
-	DRAW_PLAYER player_2, mem_sprites + 4*4
-	
-
+DRAW_LEVEL:
 	; TODO: update the tilemap to match how far in the fire wall 
 	JSR DRAW_FIRE
 
-	NOP
 	RTS
+
 
 DRAW_FIRE:
 	LDY #$00
