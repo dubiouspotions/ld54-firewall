@@ -1,4 +1,13 @@
 INITIALIZE_LEVEL:
+; initialize game data
+	LDA #70
+	STA player_1 + Player::pos + Vector::xcoord
+	LDA #180
+	STA player_2 + Player::pos + Vector::xcoord
+	LDA #$80
+	STA player_1 - Player::pos + Vector::ycoord
+	STA player_2 - Player::pos + Vector::ycoord
+
 ; write our initial sprite data to the DMA'd region for OAM
 	LDX #$00
 load_sprites:
@@ -52,15 +61,6 @@ load_tilemap_color:
 	INX
 	CPX #64
 	BNE load_tilemap_color
-
-; and then initialize game data
-	LDA #100
-	STA player_1 + Player::pos + Vector::xcoord
-	LDA #140
-	STA player_2 + Player::pos + Vector::xcoord
-	LDA #$8F
-	STA player_1 - Player::pos + Vector::ycoord
-	STA player_2 - Player::pos + Vector::ycoord
 	
 	RTS
 
