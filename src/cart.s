@@ -352,7 +352,7 @@ DRAW_FIRE:
 	LDY #$00
 	LDA #$8F
 	LDX fire_animation_index
-	draw_one_fire:
+	draw_left_fire:
 	 ; Y Value
 		SBC #7
 		PHA
@@ -364,21 +364,52 @@ DRAW_FIRE:
 		STA mem_fire_sprites, Y
 		INX
 		CPX #3
-		BNE continue_draw_fire
+		BNE continue_draw_left_fire
 		LDX #$00
-		continue_draw_fire:
+		continue_draw_left_fire:
 		INY 
 		; Settings
 		LDA #%00000010
 		STA mem_fire_sprites, Y
 		INY
-		LDA	#$00
+		; X Value
+		LDA	fire_location
+		STA mem_fire_sprites, Y
+		INY
+		PLA
+		CPY #64
+		BNE draw_left_fire
+
+	LDA #$8F
+	LDX fire_animation_index
+	draw_right_fire:
+	 ; Y Value
+		SBC #7
+		PHA
+		STA mem_fire_sprites, Y
+		INY 
+		; Tile 
+		TXA
+		ADC #$3F
+		STA mem_fire_sprites, Y
+		INX
+		CPX #3
+		BNE continue_draw_right_fire
+		LDX #$00
+		continue_draw_right_fire:
+		INY 
+		; Settings
+		LDA #%00000010
 		STA mem_fire_sprites, Y
 		INY
 		; X Value
+		LDA	#$F8
+		SBC fire_location
+		STA mem_fire_sprites, Y
+		INY
 		PLA
-		CPY #64
-		BNE draw_one_fire
+		CPY #128
+		BNE draw_right_fire
 
 
 ;;;;;; UTILITIES
