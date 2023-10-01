@@ -96,13 +96,17 @@ check_right:
 		INC PLAYER + Player::vel + Vector1::xcoord
 check_movement:
 	LDA PLAYER + Player::buttons
-	ORA # BTN_RIGHT | BTN_LEFT
-	BEQ check_up
+	AND # BTN_RIGHT | BTN_LEFT
+	BNE check_up
 		LDA PLAYER + Player::vel + Vector1::xcoord
 		CMP #0
 		BEQ check_up
-		; todo: this should move velocity towards zero rather than decrease it (i e account for negative vel)
-		DEC PLAYER + Player::vel + Vector1::xcoord
+		BMI handle_negative
+		handle_positive:
+			DEC PLAYER + Player::vel + Vector1::xcoord
+			JMP check_up
+		handle_negative:
+			INC PLAYER + Player::vel + Vector1::xcoord
 check_up:
 	LDA PLAYER + Player::buttons
 	AND #BTN_UP
