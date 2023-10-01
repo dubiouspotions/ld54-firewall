@@ -78,25 +78,51 @@ UPDATE_LEVEL:
 
 .macro HANDLE_PLAYER_INPUT	PLAYER
 .scope
+check_left:
 	LDA PLAYER + Player::buttons
 	AND #BTN_LEFT
 	BEQ check_right
-		DEC PLAYER + Player::pos + Vector::xcoord
+		LDA PLAYER + Player::flags
+		AND #%10111111 ; clear "facing right" flag
+		STA PLAYER + Player::flags
+		DEC PLAYER + Player::vel + Vector1::xcoord
 check_right:
 	LDA PLAYER + Player::buttons
 	AND #BTN_RIGHT
+	BEQ check_movement
+		LDA PLAYER + Player::flags
+		ORA #%01000000 ; set "facing right" flag
+		STA PLAYER + Player::flags
+		INC PLAYER + Player::vel + Vector1::xcoord
+check_movement:
+	LDA PLAYER + Player::buttons
+	ORA # BTN_RIGHT | BTN_LEFT
 	BEQ check_up
-		INC PLAYER + Player::pos + Vector::xcoord
+		LDA PLAYER + Player::vel + Vector1::xcoord
+		CMP #0
+		BEQ check_up
+		; todo: this should move velocity towards zero rather than decrease it (i e account for negative vel)
+		DEC PLAYER + Player::vel + Vector1::xcoord
 check_up:
 	LDA PLAYER + Player::buttons
 	AND #BTN_UP
 	BEQ check_down
-		DEC PLAYER + Player::pos + Vector::ycoord
+		nop
 check_down:
 	LDA PLAYER + Player::buttons
 	AND #BTN_DOWN
+	BEQ check_a
+		nop
+check_a:
+	LDA PLAYER + Player::buttons
+	AND #BTN_A
+	BEQ check_b
+		nop
+check_b:
+	LDA PLAYER + Player::buttons
+	AND #BTN_B
 	BEQ done
-		INC PLAYER + Player::pos + Vector::ycoord
+		nop
 done:
 .endscope
 .endmacro
@@ -105,8 +131,25 @@ done:
 RESPOND_TO_INPUT:
 	HANDLE_PLAYER_INPUT player_1
 	HANDLE_PLAYER_INPUT player_2
-	
 	RTS
+
+; ----------- PHYSICS --------
+
+.macro MOVEMENT_PHYSICS	PLAYER
+.scope
+	LDA PLAYER + Player::pos + Vector::xcoord
+	ADC PLAYER + Player::vel + Vector1::xcoord
+	STA PLAYER + Player::pos + Vector::xcoord
+
+.endscope
+.endmacro
+
+DO_PHYSICS:
+	MOVEMENT_PHYSICS player_1
+	MOVEMENT_PHYSICS player_2
+	RTS
+
+
 
 ; ------ fire handling
 
@@ -183,12 +226,6 @@ animate_fire_done:
 EVALUATE_WINNING_CONDITION:
 	IS_PLAYER_DEAD player_1
 	IS_PLAYER_DEAD player_2
-	RTS
-
-
-; ----------- PHYSICS --------
-DO_PHYSICS:
-	; TODO: Move characters based 
 	RTS
 
 

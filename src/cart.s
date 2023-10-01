@@ -13,10 +13,16 @@
 	xcoord	.word
 	ycoord	.word
 .endstruct
+.struct Vector1
+	xcoord	.byte
+	ycoord	.byte
+.endstruct
 
 .struct Player
 	pos		.tag Vector
-	vel		.tag Vector
+	vel		.tag Vector1
+	flags	.byte ; xdxx xxxx
+				;  d: 0 means facing left, 1 means facing right
 	buttons	.byte
 	dead	.byte
 .endstruct
