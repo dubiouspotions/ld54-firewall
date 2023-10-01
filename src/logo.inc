@@ -1,5 +1,11 @@
 INITIALIZE_LOGO:
-; write our initial sprite data to the DMA'd region for OAM
+
+; write our first level to the first nametable
+	LDA #$20
+	STA $2006
+	LDA #$00
+	STA $2006
+
 	LDX #$00
 load_logo_tilemap_p1:
 	LDA logo_tilemap, X
@@ -33,7 +39,7 @@ load_logo_tilemap_p4:
 	STA $2006
 	LDX #$00
 load_logo_tilemap_color:
-	LDA level_tilemap_palette, X
+	LDA logo_tilemap_palette, X
 	STA $2007
 	INX
 	CPX #64
