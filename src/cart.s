@@ -188,42 +188,23 @@ indirect_nmi_jsr:
 ; ----------- GAME LOGIC ---------
 
 UPDATE:
-	JSR RESPOND_TO_INPUT
-	JSR UPDATE_LEVEL
+	; update might be called before NMI has loaded scene
+	LDX current_scene
+	CPX #$FF
+	BEQ skip_update
+
+	LDA scene_updaters, X
+	STA indirect_ptr
+	LDA scene_updaters+1, X
+	STA indirect_ptr+1
+	JSR indirect_jsr
+skip_update:
 	RTS
 
+indirect_jsr:
+	JMP (indirect_ptr)
 
-.macro HANDLE_PLAYER_INPUT	PLAYER
-.scope
-	LDA PLAYER + Player::buttons
-	AND #BTN_LEFT
-	BEQ check_right
-		DEC PLAYER + Player::pos + Vector::xcoord
-check_right:
-	LDA PLAYER + Player::buttons
-	AND #BTN_RIGHT
-	BEQ check_up
-		INC PLAYER + Player::pos + Vector::xcoord
-check_up:
-	LDA PLAYER + Player::buttons
-	AND #BTN_UP
-	BEQ check_down
-		DEC PLAYER + Player::pos + Vector::ycoord
-check_down:
-	LDA PLAYER + Player::buttons
-	AND #BTN_DOWN
-	BEQ done
-		INC PLAYER + Player::pos + Vector::ycoord
-done:
-.endscope
-.endmacro
 
-; https://famicom.party/book/16-input/
-RESPOND_TO_INPUT:
-	HANDLE_PLAYER_INPUT player_1
-	HANDLE_PLAYER_INPUT player_2
-	
-	RTS
 
 ; https://www.nesdev.org/wiki/Controller_reading_code
 READ_JOYPADS:
@@ -281,12 +262,17 @@ joy2_loop:
 .endmacro
 
 DRAW:
-	
-	JSR DRAW_LEVEL
+	LDX current_scene
+	LDA scene_drawers, X
+	STA indirect_nmi_ptr
+	LDA scene_drawers+1, X
+	STA indirect_nmi_ptr+1
+	JSR indirect_nmi_jsr
 
 	RTS
 
-; ------------ SCENE: LEVEL --------------------
+
+; ------------ SCENES --------------------
 
 .include "level.inc"
 

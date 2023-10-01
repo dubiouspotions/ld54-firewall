@@ -65,6 +65,7 @@ load_tilemap_color:
 	RTS
 
 UPDATE_LEVEL:
+	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
 	JSR MOVE_FIRE
 	JSR ANIMATE_FIRE
@@ -72,6 +73,42 @@ UPDATE_LEVEL:
 
 	RTS
 
+
+; ---- input handling
+
+.macro HANDLE_PLAYER_INPUT	PLAYER
+.scope
+	LDA PLAYER + Player::buttons
+	AND #BTN_LEFT
+	BEQ check_right
+		DEC PLAYER + Player::pos + Vector::xcoord
+check_right:
+	LDA PLAYER + Player::buttons
+	AND #BTN_RIGHT
+	BEQ check_up
+		INC PLAYER + Player::pos + Vector::xcoord
+check_up:
+	LDA PLAYER + Player::buttons
+	AND #BTN_UP
+	BEQ check_down
+		DEC PLAYER + Player::pos + Vector::ycoord
+check_down:
+	LDA PLAYER + Player::buttons
+	AND #BTN_DOWN
+	BEQ done
+		INC PLAYER + Player::pos + Vector::ycoord
+done:
+.endscope
+.endmacro
+
+; https://famicom.party/book/16-input/
+RESPOND_TO_INPUT:
+	HANDLE_PLAYER_INPUT player_1
+	HANDLE_PLAYER_INPUT player_2
+	
+	RTS
+
+; ------ fire handling
 
 MOVE_FIRE:
 	LDX fire_move_counter
