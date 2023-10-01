@@ -137,6 +137,7 @@ RESPOND_TO_INPUT:
 
 .macro MOVEMENT_PHYSICS	PLAYER
 .scope
+	CLC
 	LDA PLAYER + Player::pos + Vector::xcoord
 	ADC PLAYER + Player::vel + Vector1::xcoord
 	STA PLAYER + Player::pos + Vector::xcoord
@@ -192,6 +193,7 @@ animate_fire_done:
 
 .macro IS_PLAYER_IN_LEFT_FIRE	PLAYER
 .scope
+	CLC
 	LDA fire_location_left
 	ADC #8 ; width of the fire sprite
 	CMP PLAYER + Player::pos + Vector::xcoord 
@@ -205,6 +207,7 @@ animate_fire_done:
 
 .macro IS_PLAYER_IN_RIGHT_FIRE	PLAYER
 .scope
+	CLC
 	LDA PLAYER + Player::pos + Vector::xcoord 
 	ADC #16 ; width of the player sprite
 	CMP fire_location_right 

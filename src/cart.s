@@ -254,6 +254,7 @@ joy2_loop:
 	STX SPRITE +  0 + Sprite::xcoord
 	STX SPRITE +  8 + Sprite::xcoord
 	TXA
+	CLC
 	ADC #7
 	STA SPRITE +  4 + Sprite::xcoord
 	STA SPRITE + 12 + Sprite::xcoord
@@ -262,6 +263,7 @@ joy2_loop:
 	STX SPRITE +  0 + Sprite::ycoord
 	STX SPRITE +  4 + Sprite::ycoord
 	TXA
+	CLC
 	ADC #7
 	STA SPRITE +  8 + Sprite::ycoord
 	STA SPRITE + 12 + Sprite::ycoord
