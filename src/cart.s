@@ -29,10 +29,10 @@
 .endstruct
 
 .enum	Scenes
-	logo
-	mainmenu
-	level
-	win
+	logo = 0
+	mainmenu = 2
+	level = 4
+	win = 6
 .endenum
 
 ; Memory address constants
@@ -67,6 +67,9 @@ fire_location_right: .RES 1
 fire_move_counter:		.RES 1
 fire_animation_index:	.RES 1
 fire_animation_counter:	.RES 1
+
+indirect_ptr:			.RES 2
+indirect_nmi_ptr:	.RES 2
 
 ; ---------- CODE ------------
 
@@ -167,12 +170,19 @@ sleep:
 ; ------------ SCENE MANAGEMENT ------------
 
 LOAD_SCENE:
-	; TODO: find the initializer for the corret scene and call it
-	JSR INITIALIZE_LEVEL
+	LDX wanted_scene
+	LDA scene_initializers, X
+	STA indirect_nmi_ptr
+	LDA scene_initializers+1, X
+	STA indirect_nmi_ptr+1
+	JSR indirect_nmi_jsr
 
 	LDX wanted_scene
 	STX current_scene
 	RTS
+
+indirect_nmi_jsr:
+	JMP (indirect_nmi_ptr)
 
 
 ; ----------- GAME LOGIC ---------
@@ -271,9 +281,6 @@ joy2_loop:
 .endmacro
 
 DRAW:
-	; Draw players
-	DRAW_PLAYER player_1, mem_sprites
-	DRAW_PLAYER player_2, mem_sprites + 4*4
 	
 	JSR DRAW_LEVEL
 
@@ -354,7 +361,7 @@ nmi_continue:
 scene_initializers:
 	.word 0
 	.word 0
-	.word INITIALIZE_LEVEL 
+	.word INITIALIZE_LEVEL
 	.word 0
 
 scene_updaters:

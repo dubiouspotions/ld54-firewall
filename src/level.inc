@@ -156,6 +156,10 @@ DO_PHYSICS:
 
 
 DRAW_LEVEL:
+; Draw players
+	DRAW_PLAYER player_1, mem_sprites
+	DRAW_PLAYER player_2, mem_sprites + 4*4
+
 	; TODO: update the tilemap to match how far in the fire wall 
 	JSR DRAW_FIRE
 
