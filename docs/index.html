@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>Firewall: A Dubious Potions game by Nevyn, Mascoll & Javve</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="settings">
+  <input id="rom" type="file">
+  <button id="pause">Pause</button>
+  <button id="reset">Reset</button>
+  <button id="hardreset">Power cycle</button>
+  <button id="runframe">Run 1 frame</button>
+  </div>
+  <canvas id="output"></canvas>
+  <pre id="log"></pre>
+  <p>
+      <a href="https://ldjam.com/events/ludum-dare/54/firewall">Firewall</a>:
+      A <a href="https://twitter.com/dubious_potions">Dubious Potions</a> game by 
+      <a href="https://mast.to/@nevyn">Nevyn</a>, 
+      <a href="https://twitter.com/mascoll">Mascoll</a> & 
+      <a href="https://twitter.com/javve">Javve</a> for 
+      <a href="https://ldjam.com/events/ludum-dare/54">LD54</a>.<br>
+    NesJs, by angelo_wf. <a href="debug.html">Debugger</a>, <a href="nsfplayer.html">NsfJs</a>.<br>
+    Source on <a href="https://github.com/angelo-wf/NesJs">Github</a>.
+  </p>
+
+  <script src="lib/zip.js"></script>
+  <script src="lib/inflate.js"></script>
+
+  <script src="nes/mappers.js"></script>
+  <script src="mappers/nrom.js"></script>
+  <script src="mappers/mmc1.js"></script>
+  <script src="mappers/uxrom.js"></script>
+  <script src="mappers/cnrom.js"></script>
+  <script src="mappers/mmc3.js"></script>
+  <script src="mappers/axrom.js"></script>
+
+  <script src="nes/cpu.js"></script>
+  <script src="nes/pipu.js"></script>
+  <script src="nes/apu.js"></script>
+  <script src="nes/nes.js"></script>
+
+  <script src="js/audio.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

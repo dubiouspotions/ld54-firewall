@@ -1,0 +1,54 @@
+
+body {
+  text-align: center;
+  background-color: #000;
+  color:#999;
+  font-family: monospace;
+  font-family: 'Press Start 2P';
+  line-height: 1.7;
+  font-size:10px;
+  font-smooth: never;
+-webkit-font-smoothing : none;
+
+  height:100vh;
+  margin:0;
+  padding:0;
+
+  display:flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+a {
+  color:#777;
+}
+
+pre {
+  margin: 0;
+  padding: 0;
+}
+
+.settings {
+  display:none;
+}
+#log {
+  font-family: monospace;
+  max-height: 200px;
+  min-height: 200px;
+  overflow: scroll;
+  text-align: left;
+  width: 512px;
+  margin: auto;
+  border: 1px solid #afafaf;
+  padding: 5px;
+  display:none;
+}
+
+#output {
+  background-color: #111;
+  height: 80vh;
+  width: calc(80vh * 1.06);
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  border:solid 1px #333;
+}
