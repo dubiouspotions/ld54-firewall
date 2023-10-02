@@ -5,8 +5,10 @@ INITIALIZE_LEVEL:
 	LDA #180
 	STA player_2 + Player::pos + Vector2::xcoordhi
 	LDA #$80
-	STA player_1 - Player::pos + Vector2::ycoordhi
-	STA player_2 - Player::pos + Vector2::ycoordhi
+	STA player_1 + Player::pos + Vector2::ycoordhi
+	STA player_2 + Player::pos + Vector2::ycoordhi
+	LDA #%01000000
+	STA player_1 + Player::flags
 
 ; write our initial sprite data to the DMA'd region for OAM
 	LDX #$00
