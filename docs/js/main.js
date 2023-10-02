@@ -205,7 +205,6 @@ window.onkeydown = function(e) {
 }
 
 window.onkeyup = function(e) {
-  console.log(e.key.toLowerCase());
   if(controlsP1[e.key.toLowerCase()] !== undefined) {
     nes.setButtonReleased(1, controlsP1[e.key.toLowerCase()]);
     e.preventDefault();
