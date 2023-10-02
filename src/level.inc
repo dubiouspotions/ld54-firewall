@@ -202,7 +202,45 @@ RESPOND_TO_INPUT:
 .endscope
 .endmacro
 
+.macro DETECT_COLLISION PLAYER, OTHER
+.scope
+	; can only collide while dashing
+	LDA PLAYER + Player::dash_cooldown
+	CMP #0
+	BEQ no_collision
+
+	; can't collide if other player is dashing
+	LDA OTHER + Player::dash_cooldown
+	CMP #0
+	BNE no_collision
+
+	; are we on the right side of the left bounds of enemy?
+	LDA PLAYER + Player::pos + Vector2::xcoordhi
+	CMP OTHER  + Player::pos + Vector2::xcoordhi
+	BCC no_collision
+	
+	; are we on the left side of the right bounds of enemy?
+	; i e, are we horizontally inside their bounding box?
+	LDA PLAYER + Player::pos + Vector2::xcoordhi
+	SBC #16 ; width of player
+	CMP OTHER  + Player::pos + Vector2::xcoordhi
+	BEQ no_collision
+
+	; TODO: Test top and bottom bounds too
+
+; HIT! Give enemy our velocity
+	LDA PLAYER + Player::vel + Vector1::xcoord
+	STA OTHER  + Player::vel + Vector1::xcoord
+	LDA #0
+	STA PLAYER + Player::vel + Vector1::xcoord
+
+no_collision:
+.endscope
+.endmacro
+
 DO_PHYSICS:
+	; movement_physics is called so many times because character is moving too slow
+	; and my subpixel movement code sucks. This is a hack to speed up char movement.
 	MOVEMENT_PHYSICS player_1
 	MOVEMENT_PHYSICS player_1
 	MOVEMENT_PHYSICS player_1
@@ -219,6 +257,10 @@ DO_PHYSICS:
 	MOVEMENT_PHYSICS player_2
 	MOVEMENT_PHYSICS player_2
 	MOVEMENT_PHYSICS player_2
+
+	DETECT_COLLISION player_1, player_2
+	DETECT_COLLISION player_2, player_1
+
 	RTS
 
 
