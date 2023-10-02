@@ -10,6 +10,12 @@ INITIALIZE_LEVEL:
 	LDA #%01000000
 	STA player_1 + Player::flags
 
+
+	LDX	#$00
+	STX fire_location_left
+	LDX	#$F8
+	STX fire_location_right
+
 ; write our initial sprite data to the DMA'd region for OAM
 	LDX #$00
 load_sprites:
@@ -67,11 +73,18 @@ load_tilemap_color:
 	RTS
 
 UPDATE_LEVEL:
+	LDX winner
+	CPX #1
+	BEQ skip_update_if_winner
+
 	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
 	JSR MOVE_FIRE
 	JSR ANIMATE_FIRE
 	JSR EVALUATE_WINNING_CONDITION
+skip_update_if_winner:
+	
+
 
 	RTS
 
@@ -345,6 +358,17 @@ animate_fire_done:
 EVALUATE_WINNING_CONDITION:
 	IS_PLAYER_DEAD player_1
 	IS_PLAYER_DEAD player_2
+
+	LDA player_1 + Player::dead
+	ADC player_2 + Player::dead
+	
+	CMP #0
+	BEQ no_winner
+		LDX winner
+		INX
+		STX winner
+	no_winner:
+
 	RTS
 
 
@@ -355,7 +379,7 @@ DRAW_LEVEL:
 
 	; TODO: update the tilemap to match how far in the fire wall 
 	JSR DRAW_FIRE
-
+	
 	RTS
 
 

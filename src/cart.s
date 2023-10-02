@@ -76,6 +76,7 @@ fire_location_right: .RES 1
 fire_move_counter:		.RES 1
 fire_animation_index:	.RES 1
 fire_animation_counter:	.RES 1
+winner:				.RES 1
 logo_counter:			.RES 1
 
 indirect_ptr:			.RES 2
