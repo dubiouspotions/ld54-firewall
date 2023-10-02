@@ -272,6 +272,8 @@ joy2_loop:
 	LDA PLAYER + Player::dash_cooldown
 	CMP #0
 	BEQ normal_sprite
+	CMP #10
+	BCS inverted_sprite
 	AND #%00000010
 	BNE normal_sprite
 inverted_sprite:
