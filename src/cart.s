@@ -26,6 +26,7 @@
 	flags	.byte ; xdxx xxxx
 				;  d: 0 means facing left, 1 means facing right
 	buttons	.byte
+	dash_cooldown	.byte
 	dead	.byte
 .endstruct
 

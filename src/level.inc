@@ -78,6 +78,11 @@ UPDATE_LEVEL:
 
 .macro HANDLE_PLAYER_INPUT	PLAYER
 .scope
+	LDA PLAYER + Player::dash_cooldown
+	CMP #0
+	BEQ check_left
+	DEC PLAYER + Player::dash_cooldown
+	
 check_left:
 	LDA PLAYER + Player::buttons
 	AND #BTN_LEFT
@@ -147,6 +152,11 @@ check_b:
 	LDA PLAYER + Player::buttons
 	AND #BTN_B
 	BEQ done
+		LDA PLAYER + Player::dash_cooldown
+		CMP #0
+		BNE done
+		LDA #60 ; cooldown is 1 second
+		STA PLAYER + Player::dash_cooldown
 		; set max speed in the direction you're facing
 		LDA PLAYER + Player::flags
 		AND #%01000000
