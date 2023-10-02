@@ -221,10 +221,11 @@ RESPOND_TO_INPUT:
 	
 	; are we on the left side of the right bounds of enemy?
 	; i e, are we horizontally inside their bounding box?
-	LDA PLAYER + Player::pos + Vector2::xcoordhi
-	SBC #16 ; width of player
-	CMP OTHER  + Player::pos + Vector2::xcoordhi
-	BEQ no_collision
+	LDA OTHER + Player::pos + Vector2::xcoordhi
+	CLC
+	ADC #8 ; width of player minus fudge factor
+	CMP PLAYER  + Player::pos + Vector2::xcoordhi
+	BCC no_collision
 
 	; TODO: Test top and bottom bounds too
 
@@ -233,6 +234,8 @@ RESPOND_TO_INPUT:
 	STA OTHER  + Player::vel + Vector1::xcoord
 	LDA #0
 	STA PLAYER + Player::vel + Vector1::xcoord
+
+	; TODO: sometimes we get stuck? push player away from us once maybe
 
 no_collision:
 .endscope
