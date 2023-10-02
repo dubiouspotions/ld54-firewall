@@ -401,6 +401,9 @@ EVALUATE_WINNING_CONDITION:
 		LDX winner
 		INX
 		STX winner
+		LDX #$00
+		STX player_1 + Player::dash_cooldown
+		STX player_2 + Player::dash_cooldown
 	no_winner:
 
 	RTS

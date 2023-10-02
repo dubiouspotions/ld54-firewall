@@ -151,7 +151,7 @@ load_palettes:
 
 
 ; start out on the game scene for now
-	LDA #Scenes::logo
+	LDA #Scenes::level
 	STA wanted_scene
 	LDA #$FF ; current scene is invalid = please load wanted scene on next draw
 	STA current_scene
@@ -286,6 +286,17 @@ apply:
 	STA SPRITE +  4 + Sprite::flags
 	STA SPRITE +  8 + Sprite::flags
 	STA SPRITE + 12 + Sprite::flags
+
+	LDX PLAYER + Player::dead
+	CPX #0
+	BEQ dont_draw_dead
+	LDA PLAYER + Player::flags
+	ORA #%00000011
+	STA SPRITE +  0 + Sprite::flags
+	STA SPRITE +  4 + Sprite::flags
+	STA SPRITE +  8 + Sprite::flags
+	STA SPRITE + 12 + Sprite::flags
+dont_draw_dead:
 
 ; if facing right, jump down and draw flipped
 	LDA PLAYER + Player::flags
