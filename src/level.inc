@@ -102,8 +102,25 @@ skip_update_if_winner:
 .scope
 	LDA PLAYER + Player::dash_cooldown
 	CMP #0
-	BEQ check_left
+	BEQ check_player_grounded
 	DEC PLAYER + Player::dash_cooldown
+
+check_player_grounded:
+; check whether player is on ground
+	LDA PLAYER + Player::pos + Vector2::ycoordhi
+	CMP #$80
+	BCC not_on_ground
+is_on_ground:
+	LDA #$80 ; put them back on ground in case we're below it
+	STA PLAYER + Player::pos + Vector2::ycoordhi
+	LDA PLAYER + Player::flags ; store "grounded" flag
+	ORA #%10000000
+	STA PLAYER + Player::flags
+	JMP check_left
+not_on_ground:
+	LDA PLAYER + Player::flags
+	AND #%01111111
+	STA PLAYER + Player::flags
 
 check_left:
 	LDA PLAYER + Player::buttons
@@ -169,7 +186,17 @@ check_a:
 	LDA PLAYER + Player::buttons
 	AND #BTN_A
 	BEQ check_b
-		nop
+		; only allow jumps if we're on the ground
+		LDA PLAYER + Player::flags
+		TAX
+		AND #%10000000
+		BEQ check_b
+		TXA
+		AND #%01111111 ; clear ground flag so we can start jumping
+		STA PLAYER + Player::flags
+		; and set upwards velocity
+		LDA #<-$70
+		STA PLAYER + Player::vel + Vector1::ycoord
 check_b:
 	LDA PLAYER + Player::buttons
 	AND #BTN_B
@@ -201,10 +228,28 @@ RESPOND_TO_INPUT:
 	RTS
 
 ; ----------- PHYSICS --------
-
-.macro MOVEMENT_PHYSICS	PLAYER
+.macro MOVEMENT_PHYSICS_BASE	PLAYER
 .scope
-; add the 8-bit signed velocity to the 16-bit unsigned position
+; fall, or if on ground, reset Y velocity
+	LDA PLAYER + Player::flags
+	AND #%10000000
+	BNE stop_falling
+
+	LDA PLAYER + Player::vel + Vector1::ycoord
+	CLC
+	ADC #5 ; gravity
+	STA PLAYER + Player::vel + Vector1::ycoord
+	JMP done_falling
+stop_falling:
+	LDA #0
+	STA PLAYER + Player::vel + Vector1::ycoord
+done_falling:
+.endscope
+.endmacro
+
+.macro MOVEMENT_PHYSICS_XY	PLAYER
+.scope
+; Add the 8-bit signed X velocity to the 16-bit unsigned X position
 ; https://codebase64.org/doku.php?id=base:signed_8bit_16bit_addition
 ; first, precalculate the sign-extended high byte in X
 	ldx #$00
@@ -219,6 +264,20 @@ RESPOND_TO_INPUT:
 	TXA
 	ADC PLAYER + Player::pos + Vector2::xcoordhi
 	STA PLAYER + Player::pos + Vector2::xcoordhi
+
+; Add the 8-bit signed Y velocity to the 16-bit unsigned Y position
+	ldx #$00
+	lda PLAYER + Player::vel + Vector1::ycoord
+	bpl :+
+		dex
+:
+; then do normal 16-bit addition
+	CLC
+	ADC PLAYER + Player::pos + Vector2::ycoordlo
+	STA PLAYER + Player::pos + Vector2::ycoordlo
+	TXA
+	ADC PLAYER + Player::pos + Vector2::ycoordhi
+	STA PLAYER + Player::pos + Vector2::ycoordhi
 .endscope
 .endmacro
 
@@ -247,7 +306,18 @@ RESPOND_TO_INPUT:
 	CMP PLAYER  + Player::pos + Vector2::xcoordhi
 	BCC no_collision
 
-	; TODO: Test top and bottom bounds too
+	; are we on the bottom side of the top bounds of enemy?
+	LDA PLAYER + Player::pos + Vector2::ycoordhi
+	CMP OTHER  + Player::pos + Vector2::ycoordhi
+	BCC no_collision
+
+	; are we on the top side of the bottom bounds of enemy?
+	; i e, are we horizontally inside their bounding box?
+	LDA OTHER + Player::pos + Vector2::ycoordhi
+	CLC
+	ADC #8 ; height of player?
+	CMP PLAYER + Player::pos + Vector2::ycoordhi
+	BCC no_collision
 
 ; HIT! Give enemy our velocity
 	LDA PLAYER + Player::vel + Vector1::xcoord
@@ -262,24 +332,28 @@ no_collision:
 .endmacro
 
 DO_PHYSICS:
+	MOVEMENT_PHYSICS_BASE player_1
+	MOVEMENT_PHYSICS_BASE player_2
 	; movement_physics is called so many times because character is moving too slow
 	; and my subpixel movement code sucks. This is a hack to speed up char movement.
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_1
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
-	MOVEMENT_PHYSICS player_2
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_1
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+	MOVEMENT_PHYSICS_XY player_2
+
+
 
 	DETECT_COLLISION player_1, player_2
 	DETECT_COLLISION player_2, player_1

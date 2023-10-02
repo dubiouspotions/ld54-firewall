@@ -23,7 +23,8 @@
 .struct Player
 	pos		.tag Vector2
 	vel		.tag Vector1
-	flags	.byte ; xdxx xxxx
+	flags	.byte ; gdxx xxxx
+				;  g: whether player is on the ground
 				;  d: 0 means facing left, 1 means facing right
 	buttons	.byte
 	dash_cooldown	.byte
