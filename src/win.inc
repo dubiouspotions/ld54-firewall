@@ -83,16 +83,20 @@ load_win_tilemap_color:
 
 
 UPDATE_WIN:
-  LDX win_scene_counter
-  INX
-  STX win_scene_counter
-  CPX #200
-  BNE continue_to_show_win
-  LDX #Scenes::level
-  STX wanted_scene
-  continue_to_show_win:
+  LDA player_1 + Player::buttons
+	AND #BTN_START
+	BNE restart_game
+	LDA player_2 + Player::buttons
+	AND #BTN_START
+	BNE restart_game
 	RTS
 
+restart_game:
+	; TODO: blink the arrows or something!
+	LDA #Scenes::level
+	STA wanted_scene
+
+	RTS
 
 DRAW_WIN:	
 	DRAW_PLAYER player_1, mem_sprites
