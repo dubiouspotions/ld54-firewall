@@ -342,6 +342,38 @@ draw_flipped:
 	STA SPRITE +  8 + Sprite::flags
 	STA SPRITE + 12 + Sprite::flags
 done_flipping:
+
+; runcycle
+	LDA frame_counter
+	AND #%00000010
+	BNE done_runcycle
+	LDA PLAYER + Player::vel + Vector1::xcoord
+	CMP #0
+	BEQ done_runcycle
+	LDA PLAYER + Player::flags
+	AND #%10000000
+	BEQ done_runcycle
+
+	LDA SPRITE + 12 + Sprite::index
+	CMP #$13
+	BNE :+
+	LDX #$11
+	STX SPRITE + 12 + Sprite::index
+	JMP done_runcycle
+:
+	CMP #$11
+	BNE :+
+	LDX #$14
+	STX SPRITE + 12 + Sprite::index
+	JMP done_runcycle
+:
+	CMP #$14
+	BNE done_runcycle
+	LDX #$13
+	STX SPRITE + 12 + Sprite::index
+
+
+done_runcycle:
 .endscope
 .endmacro
 
