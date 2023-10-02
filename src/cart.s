@@ -264,6 +264,25 @@ joy2_loop:
 	STA SPRITE +  8 + Sprite::ycoord
 	STA SPRITE + 12 + Sprite::ycoord
 
+; blink sprite if cooling down
+	LDA PLAYER + Player::dash_cooldown
+	CMP #0
+	BEQ normal_sprite
+	AND #%00000010
+	BNE normal_sprite
+inverted_sprite:
+	LDA SPRITE +  0 + Sprite::flags
+	ORA #%00000010
+	JMP apply
+normal_sprite:
+	LDA SPRITE +  0 + Sprite::flags
+	AND #%11111101
+apply:
+	STA SPRITE +  0 + Sprite::flags
+	STA SPRITE +  4 + Sprite::flags
+	STA SPRITE +  8 + Sprite::flags
+	STA SPRITE + 12 + Sprite::flags
+
 ; if facing right, jump down and draw flipped
 	LDA PLAYER + Player::flags
 	AND #%01000000
@@ -285,7 +304,7 @@ joy2_loop:
 	STA SPRITE +  8 + Sprite::flags
 	STA SPRITE + 12 + Sprite::flags
 
-	jmp draw_done
+	jmp done_flipping
 draw_flipped:
 	LDX PLAYER + Player::pos + Vector2::xcoordhi
 	STX SPRITE +  4 + Sprite::xcoord
@@ -302,7 +321,7 @@ draw_flipped:
 	STA SPRITE +  4 + Sprite::flags
 	STA SPRITE +  8 + Sprite::flags
 	STA SPRITE + 12 + Sprite::flags
-draw_done:
+done_flipping:
 .endscope
 .endmacro
 

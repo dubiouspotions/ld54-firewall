@@ -82,7 +82,7 @@ UPDATE_LEVEL:
 	CMP #0
 	BEQ check_left
 	DEC PLAYER + Player::dash_cooldown
-	
+
 check_left:
 	LDA PLAYER + Player::buttons
 	AND #BTN_LEFT
@@ -155,7 +155,7 @@ check_b:
 		LDA PLAYER + Player::dash_cooldown
 		CMP #0
 		BNE done
-		LDA #60 ; cooldown is 1 second
+		LDA #40 ; cooldown time in frames
 		STA PLAYER + Player::dash_cooldown
 		; set max speed in the direction you're facing
 		LDA PLAYER + Player::flags
