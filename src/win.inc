@@ -61,6 +61,24 @@ load_win_tilemap_color:
 	CPX #64
 	BNE load_win_tilemap_color
 	
+; Draw scores on screen
+	LDX #$20
+	STX $2006
+	LDX #$E6
+	STX $2006
+	LDA player_1 + Player::score
+	JSR PRINT_NUM
+	
+	LDX #$20
+	STX $2006
+	LDX #$F8
+	STX $2006
+	LDA player_2 + Player::score
+	JSR PRINT_NUM
+
+	
+
+; Hide gameplay stuff
 	CLC
 	LDY #$00
 	LDA mem_fire_sprites

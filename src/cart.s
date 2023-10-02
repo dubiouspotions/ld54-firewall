@@ -405,6 +405,22 @@ WAIT_FOR_VBLANK:
 	RTS
 
 
+
+PRINT_NUM:
+	CMP #5
+	BCC small
+large:
+	CLC
+	ADC #$2E
+	JMP print
+small:
+	CLC
+	ADC #$23
+print:
+	STA $2007
+
+	RTS
+
 ;;;;;; INTERRUPTS
 
 NMI:
