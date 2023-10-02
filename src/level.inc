@@ -84,8 +84,8 @@ UPDATE_LEVEL:
 	JSR EVALUATE_WINNING_CONDITION
 skip_update_if_winner:
 	
-
-
+	JSR HANDLE_WIN_STATE
+	
 	RTS
 
 
@@ -354,6 +354,33 @@ animate_fire_done:
 	IS_PLAYER_IN_RIGHT_FIRE PLAYER
 .endscope
 .endmacro
+
+HANDLE_WIN_STATE:
+	LDX winner
+	CPX #0
+	BEQ no_winner_yet
+	LDX win_screen_counter
+	INX
+	STX win_screen_counter
+	
+	CPX #100
+	BNE not_win_screen_yet
+	LDX #Scenes::win
+  STX wanted_scene
+not_win_screen_yet:
+
+	LDX win_palette_index
+	INX
+	STX win_palette_index
+	LDX win_palette_index
+	CPX #2
+	BNE skip_palette_reset
+	LDX #$00
+	STX win_palette_index
+	skip_palette_reset:
+	no_winner_yet:
+
+	RTS
 
 EVALUATE_WINNING_CONDITION:
 	IS_PLAYER_DEAD player_1
