@@ -14,24 +14,24 @@ let ctx = c.getContext("2d");
 let imgData = ctx.createImageData(256, 240);
 
 let controlsP1 = {
+  a: nes.INPUT.LEFT,
+  w: nes.INPUT.UP,
+  d: nes.INPUT.RIGHT,
+  s: nes.INPUT.DOWN,
+  t: nes.INPUT.START,
+  y: nes.INPUT.SELECT,
+  h: nes.INPUT.B,
+  g: nes.INPUT.A
+}
+let controlsP2 = {
   arrowright: nes.INPUT.RIGHT,
   arrowleft: nes.INPUT.LEFT,
   arrowdown: nes.INPUT.DOWN,
   arrowup: nes.INPUT.UP,
-  enter: nes.INPUT.START,
-  shift: nes.INPUT.SELECT,
-  a: nes.INPUT.B,
-  z: nes.INPUT.A
-}
-let controlsP2 = {
-  l: nes.INPUT.RIGHT,
-  j: nes.INPUT.LEFT,
-  k: nes.INPUT.DOWN,
-  i: nes.INPUT.UP,
-  p: nes.INPUT.START,
-  o: nes.INPUT.SELECT,
-  t: nes.INPUT.B,
-  g: nes.INPUT.A
+  k: nes.INPUT.START,
+  l: nes.INPUT.SELECT,
+  '.': nes.INPUT.B,
+  ',': nes.INPUT.A
 }
 
 zip.workerScriptsPath = "lib/";
@@ -205,6 +205,7 @@ window.onkeydown = function(e) {
 }
 
 window.onkeyup = function(e) {
+  console.log(e.key.toLowerCase());
   if(controlsP1[e.key.toLowerCase()] !== undefined) {
     nes.setButtonReleased(1, controlsP1[e.key.toLowerCase()]);
     e.preventDefault();
