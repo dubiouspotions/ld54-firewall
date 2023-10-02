@@ -1,3 +1,12 @@
+.macro MOVE_TO_WIN_POSITION	PLAYER
+.scope
+	LDX #120
+	STX PLAYER + Player::pos + Vector2::xcoordhi
+	LDX #$63
+	STX PLAYER + Player::pos + Vector2::ycoordhi
+.endscope
+.endmacro
+
 INITIALIZE_WIN:
 
 ; write our win screen to the first nametable
@@ -58,7 +67,20 @@ load_win_tilemap_color:
 		CPY #128
 		BNE hide_fire_sprites
 
+	LDX player_1 + Player::dead
+	CPX #0
+	BEQ player_1_not_dead
+		MOVE_TO_WIN_POSITION player_2
+	player_1_not_dead:
+
+	LDX player_2 + Player::dead
+	CPX #0
+	BEQ player_2_not_dead
+		MOVE_TO_WIN_POSITION player_1
+	player_2_not_dead:
+
 	RTS
+
 
 UPDATE_WIN:
   LDX win_scene_counter
@@ -73,4 +95,6 @@ UPDATE_WIN:
 
 
 DRAW_WIN:	
+	DRAW_PLAYER player_1, mem_sprites
+	DRAW_PLAYER player_2, mem_sprites + 4*4
 	RTS
