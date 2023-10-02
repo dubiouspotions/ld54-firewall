@@ -306,7 +306,18 @@ done_falling:
 	CMP PLAYER  + Player::pos + Vector2::xcoordhi
 	BCC no_collision
 
-	; TODO: Test top and bottom bounds too
+	; are we on the bottom side of the top bounds of enemy?
+	LDA PLAYER + Player::pos + Vector2::ycoordhi
+	CMP OTHER  + Player::pos + Vector2::ycoordhi
+	BCC no_collision
+
+	; are we on the top side of the bottom bounds of enemy?
+	; i e, are we horizontally inside their bounding box?
+	LDA OTHER + Player::pos + Vector2::ycoordhi
+	CLC
+	ADC #8 ; height of player?
+	CMP PLAYER + Player::pos + Vector2::ycoordhi
+	BCC no_collision
 
 ; HIT! Give enemy our velocity
 	LDA PLAYER + Player::vel + Vector1::xcoord
