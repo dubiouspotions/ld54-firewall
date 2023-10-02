@@ -45,6 +45,19 @@ load_win_tilemap_color:
 	CPX #64
 	BNE load_win_tilemap_color
 	
+	CLC
+	LDY #$00
+	LDA mem_fire_sprites
+	hide_fire_sprites:
+		LDA $F1
+		STA mem_fire_sprites, Y
+		INY
+		INY
+		INY
+		INY
+		CPY #128
+		BNE hide_fire_sprites
+
 	RTS
 
 UPDATE_WIN:
