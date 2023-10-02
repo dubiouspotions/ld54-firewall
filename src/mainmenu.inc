@@ -48,6 +48,19 @@ load_mainmenu_tilemap_color:
 	RTS
 
 UPDATE_MAINMENU:
+	LDA player_1 + Player::buttons
+	AND #BTN_START
+	BNE start_game
+	LDA player_2 + Player::buttons
+	AND #BTN_START
+	BNE start_game
+
+	RTS
+start_game:
+	; TODO: blink the arrows or something!
+	LDA #Scenes::level
+	STA wanted_scene
+
 	RTS
 
 

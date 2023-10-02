@@ -151,7 +151,7 @@ load_palettes:
 
 
 ; start out on the game scene for now
-	LDA #Scenes::level
+	LDA #Scenes::logo
 	STA wanted_scene
 	LDA #$FF ; current scene is invalid = please load wanted scene on next draw
 	STA current_scene
@@ -162,7 +162,7 @@ load_palettes:
 	STA $2005
 
 ; Done with setup! Enable interrupts again!
-	CLI					; enable interrupts
+	;CLI					; enable interrupts
 	
 	LDA #%10010000 		; please generate VBLANK NMIs
 	STA $2000
@@ -374,27 +374,33 @@ NMI:
 	LDA #$02		; Load sprite DMA range to PPU
 	STA $4014
 
+	LDA #$00		; reset scroll
+	STA $2005
+	STA $2005
+
 ; Load data for wanted scene, if it's not already loaded
 	LDX current_scene
 	CPX wanted_scene
-	BEQ nmi_continue
+	BEQ nmi_draw
 
+	SEI
 	LDX #$00 			; PPU, please hold while you receive new data.
 	STX $2000
 	STX $2001
-	SEI
 	JSR LOAD_SCENE
 	
-	
-	LDA #$00			; reset scroll
-	STA $2005
-	STA $2005
-	LDA #%10010000 		; please generate VBLANK NMIs
+
+	LDA #%10010000 		; please generate VBLANK NMIs again
 	STA $2000
 	LDA #%00011110		; please draw sprites and background
 	STA $2001
-	CLI
-nmi_continue:
+	; XXX: If I enable interrupts I get an IRQ when I do JMP nmi_cleanup and I don't understand why??
+	;CLI
+
+	; skip drawing this frame since we're likely no longer in VBLANK
+	JMP nmi_cleanup
+
+nmi_draw:
 
 	JSR DRAW
 
@@ -404,6 +410,7 @@ nmi_continue:
 	LDA #$00
 	STA sleeping
 
+nmi_cleanup:
 	PLA
 	TAY
 	PLA
@@ -413,6 +420,9 @@ nmi_continue:
 
 	RTI
 
+IRQ:
+	nop
+	RTI
 
 .segment "RODATA"
 
@@ -512,7 +522,8 @@ win_tilemap_palette:
 
 
 .segment "VECTORS"
-	.word NMI
-	.word RESET
+	.addr NMI
+	.addr RESET
+	.addr IRQ
 .segment "CHR"
 	.incbin "src/rom.chr"
