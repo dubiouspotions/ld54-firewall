@@ -58,5 +58,15 @@ pre {
   padding:10px 20px;
   border-radius: 15px;
   border:solid 1px #333;
+  color:#999;
+}
+.controls th {
   color:#aaa;
+}
+.controls td {
+  color:#ddd;
+}
+.controls td,
+.controls th {
+  padding:2px 10px;
 }
