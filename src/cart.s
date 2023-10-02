@@ -290,6 +290,9 @@ apply:
 	LDX PLAYER + Player::dead
 	CPX #0
 	BEQ dont_draw_dead
+	LDA frame_counter
+	AND #%00001000
+	BNE dont_draw_dead
 	LDA PLAYER + Player::flags
 	ORA #%00000011
 	STA SPRITE +  0 + Sprite::flags
