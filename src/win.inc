@@ -9,7 +9,7 @@
 
 .macro HIDE_PLAYER	PLAYER
 .scope
-	LDX $F1
+	LDX #$F1
 	STX PLAYER + Player::pos + Vector2::ycoordhi
 .endscope
 .endmacro
@@ -65,7 +65,7 @@ load_win_tilemap_color:
 	LDY #$00
 	LDA mem_fire_sprites
 	hide_fire_sprites:
-		LDA $F1
+		LDA #$F1
 		STA mem_fire_sprites, Y
 		INY
 		INY
