@@ -37,6 +37,12 @@ let controlsP2 = {
 zip.workerScriptsPath = "lib/";
 zip.useWebWorkers = false;
 
+const playAudio = () => {
+  const audioPlayer = document.querySelector('#audio-player');
+  audioPlayer.play()
+}
+  
+
 el("rom").onchange = function(e) {
   audioHandler.resume();
   let freader = new FileReader();
@@ -194,6 +200,7 @@ function el(id) {
 }
 
 window.onkeydown = function(e) {
+  playAudio();
   if(controlsP1[e.key.toLowerCase()] !== undefined) {
     nes.setButtonPressed(1, controlsP1[e.key.toLowerCase()]);
     e.preventDefault();
@@ -246,3 +253,7 @@ const loadGame = async () => {
 }
 
 loadGame()
+
+document.querySelector('#output').addEventListener('click', () => {
+  playAudio();
+}, false)
