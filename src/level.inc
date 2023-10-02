@@ -433,10 +433,16 @@ animate_fire_done:
 .endscope
 .endmacro
 
-.macro IS_PLAYER_DEAD	PLAYER
+.macro IS_PLAYER_DEAD	PLAYER, ENEMY
 .scope
 	IS_PLAYER_IN_LEFT_FIRE PLAYER
 	IS_PLAYER_IN_RIGHT_FIRE PLAYER
+
+	LDA PLAYER + Player::dead
+	CMP #1
+	BNE no_win
+	INC ENEMY + Player::score
+no_win:
 .endscope
 .endmacro
 
@@ -468,8 +474,8 @@ not_win_screen_yet:
 	RTS
 
 EVALUATE_WINNING_CONDITION:
-	IS_PLAYER_DEAD player_1
-	IS_PLAYER_DEAD player_2
+	IS_PLAYER_DEAD player_1, player_2
+	IS_PLAYER_DEAD player_2, player_1
 
 	LDA player_1 + Player::dead
 	ADC player_2 + Player::dead

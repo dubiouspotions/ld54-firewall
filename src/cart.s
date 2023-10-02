@@ -29,6 +29,7 @@
 	buttons	.byte
 	dash_cooldown	.byte
 	dead	.byte
+	score	.byte
 .endstruct
 
 .struct Sprite
