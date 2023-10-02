@@ -81,7 +81,6 @@ win_screen_counter:			.RES 1
 win_palette_index:			.RES 1
 winner:				.RES 1
 logo_counter:			.RES 1
-win_scene_counter:		.RES 1
 
 indirect_ptr:			.RES 2
 indirect_nmi_ptr:	.RES 2
