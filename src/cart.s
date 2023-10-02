@@ -409,6 +409,9 @@ nmi_continue:
 
 	RTI
 
+IRQ:
+	nop
+	RTI
 
 .segment "RODATA"
 
@@ -497,7 +500,8 @@ mainmenu_tilemap_palette:
 		
 
 .segment "VECTORS"
-	.word NMI
-	.word RESET
+	.addr NMI
+	.addr RESET
+	.addr IRQ
 .segment "CHR"
 	.incbin "src/rom.chr"
