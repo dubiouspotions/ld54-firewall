@@ -7,6 +7,13 @@
 .endscope
 .endmacro
 
+.macro HIDE_PLAYER	PLAYER
+.scope
+	LDX $F1
+	STX PLAYER + Player::pos + Vector2::ycoordhi
+.endscope
+.endmacro
+
 INITIALIZE_WIN:
 
 ; write our win screen to the first nametable
@@ -71,12 +78,14 @@ load_win_tilemap_color:
 	CPX #0
 	BEQ player_1_not_dead
 		MOVE_TO_WIN_POSITION player_2
+		HIDE_PLAYER player_1
 	player_1_not_dead:
 
 	LDX player_2 + Player::dead
 	CPX #0
 	BEQ player_2_not_dead
 		MOVE_TO_WIN_POSITION player_1
+		HIDE_PLAYER player_2
 	player_2_not_dead:
 
 	RTS
