@@ -148,7 +148,7 @@ load_palettes:
 
 
 ; start out on the game scene for now
-	LDA #Scenes::level
+	LDA #Scenes::logo
 	STA wanted_scene
 	LDA #$FF ; current scene is invalid = please load wanted scene on next draw
 	STA current_scene
