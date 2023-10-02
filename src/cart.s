@@ -9,9 +9,11 @@
 
 ; Type definitions
 
-.struct Vector
-	xcoord	.word
-	ycoord	.word
+.struct Vector2
+	xcoordhi	.byte ; pixel location
+	xcoordlo	.byte ; subpixel location
+	ycoordhi	.byte
+	ycoordlo	.byte
 .endstruct
 .struct Vector1
 	xcoord	.byte
@@ -19,7 +21,7 @@
 .endstruct
 
 .struct Player
-	pos		.tag Vector
+	pos		.tag Vector2
 	vel		.tag Vector1
 	flags	.byte ; xdxx xxxx
 				;  d: 0 means facing left, 1 means facing right
@@ -252,7 +254,7 @@ joy2_loop:
 .macro DRAW_PLAYER	PLAYER, SPRITE
 .scope
 ; draw y coordinate same always
-	LDX PLAYER + Player::pos + Vector::ycoord
+	LDX PLAYER + Player::pos + Vector2::ycoordhi
 	STX SPRITE +  0 + Sprite::ycoord
 	STX SPRITE +  4 + Sprite::ycoord
 	TXA
@@ -266,7 +268,7 @@ joy2_loop:
 	AND #%01000000
 	BNE draw_flipped
 
-	LDX PLAYER + Player::pos + Vector::xcoord
+	LDX PLAYER + Player::pos + Vector2::xcoordhi
 	STX SPRITE +  0 + Sprite::xcoord
 	STX SPRITE +  8 + Sprite::xcoord
 	TXA
@@ -284,7 +286,7 @@ joy2_loop:
 
 	jmp draw_done
 draw_flipped:
-	LDX PLAYER + Player::pos + Vector::xcoord
+	LDX PLAYER + Player::pos + Vector2::xcoordhi
 	STX SPRITE +  4 + Sprite::xcoord
 	STX SPRITE +  12 + Sprite::xcoord
 	TXA

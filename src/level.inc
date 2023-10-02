@@ -1,12 +1,12 @@
 INITIALIZE_LEVEL:
 ; initialize game data
 	LDA #70
-	STA player_1 + Player::pos + Vector::xcoord
+	STA player_1 + Player::pos + Vector2::xcoordhi
 	LDA #180
-	STA player_2 + Player::pos + Vector::xcoord
+	STA player_2 + Player::pos + Vector2::xcoordhi
 	LDA #$80
-	STA player_1 - Player::pos + Vector::ycoord
-	STA player_2 - Player::pos + Vector::ycoord
+	STA player_1 - Player::pos + Vector2::ycoordhi
+	STA player_2 - Player::pos + Vector2::ycoordhi
 
 ; write our initial sprite data to the DMA'd region for OAM
 	LDX #$00
@@ -84,8 +84,17 @@ check_left:
 	BEQ check_right
 		LDA PLAYER + Player::flags
 		AND #%10111111 ; clear "facing right" flag
+
 		STA PLAYER + Player::flags
-		DEC PLAYER + Player::vel + Vector1::xcoord
+		LDA PLAYER + Player::vel + Vector1::xcoord
+		CMP #<-117 ; max left speed
+		BMI check_right
+		BEQ check_right
+		
+		LDA #<-10 ; speed increase per frame
+		CLC
+		ADC PLAYER + Player::vel + Vector1::xcoord
+		STA PLAYER + Player::vel + Vector1::xcoord
 check_right:
 	LDA PLAYER + Player::buttons
 	AND #BTN_RIGHT
@@ -93,7 +102,15 @@ check_right:
 		LDA PLAYER + Player::flags
 		ORA #%01000000 ; set "facing right" flag
 		STA PLAYER + Player::flags
-		INC PLAYER + Player::vel + Vector1::xcoord
+
+		LDA PLAYER + Player::vel + Vector1::xcoord
+		CMP #117 ; max right speed
+		BPL check_movement
+		
+		LDA #10 ; speed increase per frame
+		CLC
+		ADC PLAYER + Player::vel + Vector1::xcoord
+		STA PLAYER + Player::vel + Vector1::xcoord
 check_movement:
 	LDA PLAYER + Player::buttons
 	AND # BTN_RIGHT | BTN_LEFT
@@ -103,10 +120,14 @@ check_movement:
 		BEQ check_up
 		BMI handle_negative
 		handle_positive:
-			DEC PLAYER + Player::vel + Vector1::xcoord
+			CLC
+			SBC #10 ; speed decrease per frame
+			STA PLAYER + Player::vel + Vector1::xcoord
 			JMP check_up
 		handle_negative:
-			INC PLAYER + Player::vel + Vector1::xcoord
+			CLC
+			ADC #10 ; speed decrease per frame
+			STA PLAYER + Player::vel + Vector1::xcoord
 check_up:
 	LDA PLAYER + Player::buttons
 	AND #BTN_UP
@@ -141,11 +162,21 @@ RESPOND_TO_INPUT:
 
 .macro MOVEMENT_PHYSICS	PLAYER
 .scope
+; add the 8-bit signed velocity to the 16-bit unsigned position
+; https://codebase64.org/doku.php?id=base:signed_8bit_16bit_addition
+; first, precalculate the sign-extended high byte in X
+	ldx #$00
+	lda PLAYER + Player::vel + Vector1::xcoord
+	bpl :+
+		dex ; high byte in X becomes $ff -> denotes negative 16bit value
+:
+; then do normal 16-bit addition
 	CLC
-	LDA PLAYER + Player::pos + Vector::xcoord
-	ADC PLAYER + Player::vel + Vector1::xcoord
-	STA PLAYER + Player::pos + Vector::xcoord
-
+	ADC PLAYER + Player::pos + Vector2::xcoordlo
+	STA PLAYER + Player::pos + Vector2::xcoordlo
+	TXA
+	ADC PLAYER + Player::pos + Vector2::xcoordhi
+	STA PLAYER + Player::pos + Vector2::xcoordhi
 .endscope
 .endmacro
 
@@ -200,7 +231,7 @@ animate_fire_done:
 	CLC
 	LDA fire_location_left
 	ADC #8 ; width of the fire sprite
-	CMP PLAYER + Player::pos + Vector::xcoord 
+	CMP PLAYER + Player::pos + Vector2::xcoordhi
 	BCC not_dead_left ; FireLeftX - PlayerX = ?: If minus, not dead.
 	LDY PLAYER + Player::dead
 	INY
@@ -212,7 +243,7 @@ animate_fire_done:
 .macro IS_PLAYER_IN_RIGHT_FIRE	PLAYER
 .scope
 	CLC
-	LDA PLAYER + Player::pos + Vector::xcoord 
+	LDA PLAYER + Player::pos + Vector2::xcoordhi
 	ADC #16 ; width of the player sprite
 	CMP fire_location_right 
 	BCC not_dead_right ; PlayerX+8 - FireRightX = ?: If positive, not dead.
