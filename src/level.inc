@@ -22,6 +22,10 @@ INITIALIZE_LEVEL:
 	STX win_palette_index
 	STX player_1 + Player::dead
 	STX player_2 + Player::dead
+	STX player_1 + Player::vel
+	STX player_2 + Player::vel
+	STX player_1 + Player::dash_cooldown
+	STX player_2 + Player::dash_cooldown
 
 ; write our initial sprite data to the DMA'd region for OAM
 	LDX #$00
