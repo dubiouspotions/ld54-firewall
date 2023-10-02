@@ -46,8 +46,8 @@ pre {
 
 #output {
   background-color: #111;
-  height: 80vh;
-  width: calc(80vh * 1.06);
+  height: 67vh;
+  width: calc(67vh * 1.06);
   image-rendering: crisp-edges;
   image-rendering: pixelated;
   border:solid 1px #333;
