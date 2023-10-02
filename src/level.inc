@@ -102,8 +102,23 @@ skip_update_if_winner:
 .scope
 	LDA PLAYER + Player::dash_cooldown
 	CMP #0
-	BEQ check_left
+	BEQ check_player_grounded
 	DEC PLAYER + Player::dash_cooldown
+
+check_player_grounded:
+; check whether player is on ground
+	LDA PLAYER + Player::pos + Vector2::ycoordhi
+	CMP #$80
+	BCC not_on_ground
+is_on_ground:
+	LDA PLAYER + Player::pos + Player::flags
+	ORA #%10000000
+	STA PLAYER + Player::pos + Player::flags
+	JMP check_left
+not_on_ground:
+	LDA PLAYER + Player::pos + Player::flags
+	AND #%01111111
+	STA PLAYER + Player::pos + Player::flags
 
 check_left:
 	LDA PLAYER + Player::buttons
