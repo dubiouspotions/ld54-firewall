@@ -16,6 +16,13 @@ INITIALIZE_LEVEL:
 	LDX	#$F8
 	STX fire_location_right
 
+	LDX #$00
+	STX winner
+	STX win_screen_counter
+	STX win_palette_index
+	STX player_1 + Player::dead
+	STX player_2 + Player::dead
+
 ; write our initial sprite data to the DMA'd region for OAM
 	LDX #$00
 load_sprites:
