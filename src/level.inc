@@ -135,11 +135,12 @@ check_left:
 
 		STA PLAYER + Player::flags
 		LDA PLAYER + Player::vel + Vector1::xcoord
-		CMP #<-50 ; max left speed
+		BPL walk_left ; positive numbers are always more than negative
+		CMP #<-walk_speed ; max left speed
 		BMI check_right
 		BEQ check_right
-		
-		LDA #<-10 ; speed increase per frame
+	walk_left:
+		LDA #<-walk_accel ; speed increase per frame
 		CLC
 		ADC PLAYER + Player::vel + Vector1::xcoord
 		STA PLAYER + Player::vel + Vector1::xcoord
@@ -152,10 +153,11 @@ check_right:
 		STA PLAYER + Player::flags
 
 		LDA PLAYER + Player::vel + Vector1::xcoord
-		CMP #50 ; max right speed
+		BMI walk_right ; negative numbers are always more than positive
+		CMP #walk_speed ; max right speed
 		BPL check_movement
-		
-		LDA #10 ; speed increase per frame
+	walk_right:
+		LDA #walk_accel ; speed increase per frame
 		CLC
 		ADC PLAYER + Player::vel + Vector1::xcoord
 		STA PLAYER + Player::vel + Vector1::xcoord
@@ -169,12 +171,12 @@ check_movement:
 		BMI handle_negative
 		handle_positive:
 			CLC
-			SBC #4 ; speed decrease per frame
+			SBC #walk_decel ; speed decrease per frame
 			STA PLAYER + Player::vel + Vector1::xcoord
 			JMP check_up
 		handle_negative:
 			CLC
-			ADC #4 ; speed decrease per frame
+			ADC #walk_decel ; speed decrease per frame
 			STA PLAYER + Player::vel + Vector1::xcoord
 check_up:
 	LDA PLAYER + Player::buttons
@@ -215,11 +217,11 @@ check_b:
 		AND #%01000000
 		BNE facing_right
 		facing_left:
-			LDA #<-117
+			LDA #<-boost_speed
 			STA PLAYER + Player::vel + Vector1::xcoord
 			JMP done
 		facing_right:
-			LDA #117
+			LDA #boost_speed
 			STA PLAYER + Player::vel + Vector1::xcoord
 done:
 .endscope

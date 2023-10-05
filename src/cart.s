@@ -62,6 +62,11 @@ BTN_SELECT  = %00100000
 BTN_B       = %01000000
 BTN_A       = %10000000
 
+walk_speed  = 50 ; in decimal, for some reason
+walk_accel	= 10 ; vel increase per frame
+walk_decel	=  4 ; vel decrease per frame
+boost_speed = 100 ; walk_speed+boost_speed must be 254
+
 ; ---------- ZERO PAGE ------------
 
 .segment "ZEROPAGE"
