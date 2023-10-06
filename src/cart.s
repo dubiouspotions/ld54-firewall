@@ -279,7 +279,7 @@ joy2_loop:
 	CMP #0
 	BEQ normal_sprite
 	CMP #10
-	BCS inverted_sprite
+	BCS normal_sprite
 	AND #%00000010
 	BNE normal_sprite
 inverted_sprite:
