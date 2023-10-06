@@ -27,6 +27,7 @@
 				;  g: whether player is on the ground
 				;  d: 0 means facing left, 1 means facing right
 	buttons	.byte
+	buttons_pressed	.byte ; just buttons pressed this frame
 	dash_cooldown	.byte
 	dead	.byte
 	score	.byte
@@ -78,18 +79,19 @@ sleeping:				.RES 1
 .segment "BSS"
 current_scene: 			.RES 1
 wanted_scene: 			.RES 1
-fire_location_left: .RES 1
-fire_location_right: .RES 1
+fire_location_left: 	.RES 1
+fire_location_right: 	.RES 1
 fire_move_counter:		.RES 1
 fire_animation_index:	.RES 1
 fire_animation_counter:	.RES 1
-win_screen_counter:			.RES 1
-win_palette_index:			.RES 1
-winner:				.RES 1
+win_screen_counter:		.RES 1
+win_palette_index:		.RES 1
+winner:					.RES 1
 logo_counter:			.RES 1
+buttons_tmp:			.RES 1
 
 indirect_ptr:			.RES 2
-indirect_nmi_ptr:	.RES 2
+indirect_nmi_ptr:		.RES 2
 
 ; ---------- CODE ------------
 
@@ -227,37 +229,36 @@ indirect_jsr:
 
 
 ; https://www.nesdev.org/wiki/Controller_reading_code
-READ_JOYPADS:
+.macro READ_JOYPAD PLAYER, MEM
+.scope
     lda #$01
     ; While the strobe bit is set, buttons will be continuously reloaded.
     ; This means that reading from JOYPAD1 will only return the state of the
     ; first button: button A.
-    sta mem_JOYPAD1
-    sta player_1 + Player::buttons
+    sta MEM
+    sta buttons_tmp
     lsr a        ; now A is 0
     ; By storing 0 into JOYPAD1, the strobe bit is cleared and the reloading stops.
     ; This allows all 8 buttons (newly reloaded) to be read from JOYPAD1.
-    sta mem_JOYPAD1
+    sta MEM
 joy1_loop:
-    lda mem_JOYPAD1
+    lda MEM
     lsr a	       ; bit 0 -> Carry
-    rol player_1 + Player::buttons  ; Carry -> bit 0; bit 7 -> Carry
+    rol buttons_tmp  ; Carry -> bit 0; bit 7 -> Carry
     bcc joy1_loop
 
+	; now, figure out which buttons were pressed this particular frame
+	lda PLAYER + Player::buttons
+	eor buttons_tmp
+	and buttons_tmp
+	sta PLAYER + Player::buttons_pressed
 
-	; let's do it again for joy2
-	lda #$01
-    sta mem_JOYPAD2
-    sta player_2 + Player::buttons
-    lsr a
-    sta mem_JOYPAD2
-joy2_loop:
-    lda mem_JOYPAD2
-    lsr a
-    rol player_2 + Player::buttons
-    bcc joy2_loop
+	; finally, save the current button state for the player
+	lda buttons_tmp
+	sta PLAYER + Player::buttons
+.endscope
+.endmacro
 
-    rts
 
 ; ----------- DRAWING --------
 
@@ -474,7 +475,8 @@ nmi_draw:
 
 	JSR DRAW
 
-	JSR READ_JOYPADS
+	READ_JOYPAD player_1, mem_JOYPAD1
+	READ_JOYPAD player_2, mem_JOYPAD2
 
 	; wake game loop now that we're done with vsync work
 	LDA #$00
