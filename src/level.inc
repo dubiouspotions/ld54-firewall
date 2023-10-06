@@ -170,7 +170,7 @@ check_movement:
 		BEQ check_up
 		BMI handle_negative
 		handle_positive:
-			CLC
+			SEC
 			SBC #walk_decel ; speed decrease per frame
 			STA PLAYER + Player::vel + Vector1::xcoord
 			JMP check_up
