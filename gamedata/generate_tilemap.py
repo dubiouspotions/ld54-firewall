@@ -1,6 +1,7 @@
 from xml.etree import ElementTree
+import sys
 
-document = ElementTree.parse('level1.tmx')
+document = ElementTree.parse(sys.argv[1])
 tilemap = document.getroot()
 tileset = tilemap.find("tileset")
 firstlayer = tilemap.find("layer")
