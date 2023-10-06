@@ -331,7 +331,9 @@ done_falling:
 	LDA #0
 	STA PLAYER + Player::vel + Vector1::xcoord
 
-	; TODO: sometimes we get stuck? push player away from us once maybe
+	; sometimes we get stuck? push player away from us once maybe
+	MOVEMENT_PHYSICS_XY OTHER
+	
 
 no_collision:
 .endscope
