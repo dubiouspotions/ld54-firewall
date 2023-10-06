@@ -189,7 +189,7 @@ check_down:
 	BEQ check_a
 		nop
 check_a:
-	LDA PLAYER + Player::buttons
+	LDA PLAYER + Player::buttons_pressed
 	AND #BTN_A
 	BEQ check_b
 		; only allow jumps if we're on the ground
