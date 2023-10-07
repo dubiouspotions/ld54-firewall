@@ -44,6 +44,8 @@ load_mainmenu_tilemap_color:
 	INX
 	CPX #64
 	BNE load_mainmenu_tilemap_color
+
+	JSR PLAY_BEEP
 	
 	RTS
 

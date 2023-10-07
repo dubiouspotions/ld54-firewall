@@ -115,6 +115,9 @@ RESET:
 	STX $2000
 	STX $2001
 
+	; clear APU
+	JSR CLEAR_APU
+
 	JSR WAIT_FOR_VBLANK
 
 	TXA
@@ -394,6 +397,9 @@ DRAW:
 
 	RTS
 
+; ------------- AUDIO --------------------
+
+.include "audio.inc"
 
 ; ------------ SCENES --------------------
 
@@ -403,7 +409,7 @@ DRAW:
 .include "win.inc"
 
 
-;;;;;; UTILITIES
+; ----------- UTILITIES ------------------
 
 WAIT_FOR_VBLANK:
 	BIT $2002
