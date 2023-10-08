@@ -266,7 +266,7 @@ joy1_loop:
 ; ----------- DRAWING --------
 
 
-.macro DRAW_PLAYER	PLAYER, SPRITE
+.macro DRAW_PLAYER	PLAYER, SPRITE, PALETTE_OFFSET, BASE_COLOR
 .scope
 ; draw y coordinate same always
 	LDX PLAYER + Player::pos + Vector2::ycoordhi
@@ -279,26 +279,34 @@ joy1_loop:
 	STA SPRITE + 12 + Sprite::ycoord
 
 ; blink sprite if cooling down
+
+	LDA #$3F
+	STA $2006
+	LDA #PALETTE_OFFSET+1
+	STA $2006
+
 	LDA PLAYER + Player::dash_cooldown
 	CMP #0
 	BEQ normal_sprite
 	CMP #10
-	BCS normal_sprite
+	BCS highlighted_sprite
 	AND #%00000010
 	BNE normal_sprite
-inverted_sprite:
-	LDA SPRITE +  0 + Sprite::flags
-	ORA #%00000010
-	JMP apply
+highlighted_sprite:
+	LDA #BASE_COLOR
+	STA $2007
+	JMP done
 normal_sprite:
-	LDA SPRITE +  0 + Sprite::flags
-	AND #%11111101
-apply:
-	STA SPRITE +  0 + Sprite::flags
-	STA SPRITE +  4 + Sprite::flags
-	STA SPRITE +  8 + Sprite::flags
-	STA SPRITE + 12 + Sprite::flags
+	LDA #BASE_COLOR + $10
+	STA $2007
+done:
+	; ?? I have to reset the PPU address pointer afterwards? otherwise scroll gets messy?
+	LDA #$00
+	STA $2006
+	LDA #$00
+	STA $2006
 
+; draw dead sprite if dead
 	LDX PLAYER + Player::dead
 	CPX #0
 	BEQ dont_draw_dead

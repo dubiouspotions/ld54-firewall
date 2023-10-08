@@ -499,8 +499,8 @@ EVALUATE_WINNING_CONDITION:
 
 DRAW_LEVEL:
 ; Draw players
-	DRAW_PLAYER player_1, mem_sprites
-	DRAW_PLAYER player_2, mem_sprites + 4*4
+	DRAW_PLAYER player_1, mem_sprites,       $10, $01
+	DRAW_PLAYER player_2, mem_sprites + 4*4, $14, $05
 
 	; TODO: update the tilemap to match how far in the fire wall 
 	JSR DRAW_FIRE
