@@ -294,10 +294,9 @@ done_falling:
 	CMP #0
 	BEQ no_collision
 
-	; can't collide if other player is dashing
-	LDA OTHER + Player::dash_cooldown
-	CMP #0
-	BNE no_collision
+	; can't collide if we have lower cooldown than them
+	CMP OTHER + Player::dash_cooldown
+	BCC no_collision
 
 	; are we on the right side of the left bounds of enemy?
 	LDA PLAYER + Player::pos + Vector2::xcoordhi
