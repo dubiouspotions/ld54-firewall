@@ -39,6 +39,7 @@ zip.useWebWorkers = false;
 
 const playAudio = () => {
   const audioPlayer = document.querySelector('#audio-player');
+  if(!audioPlayer) return;
   audioPlayer.play()
 }
   
