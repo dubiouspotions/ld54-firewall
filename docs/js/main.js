@@ -244,15 +244,15 @@ window.onkeyup = function(e) {
   }
 }
 
-const loadGame = async () => {
-  const url = "./game/firewall.nes"
+const loadGame = async (url) => {
+  console.log("Loading game", url)
   const res = await fetch(url)
   const content = await res.arrayBuffer()
   const buf = new Uint8Array(content)
   loadRom(buf, "MY GAME");
 }
 
-loadGame()
+loadGame(document.body.getAttribute("game"))
 
 document.querySelector('#output').addEventListener('click', () => {
   playAudio();
