@@ -1,3 +1,6 @@
+; This file is for nevyn's attempt to build his own sound engine.
+; It's currently unused, and famistudio is used instead by audio_fs.inc.
+
 ; https://irkenkitties.com/blog/2015/03/29/creating-sound-on-the-nes/
 ; https://nesdoug.com/2015/12/02/14-intro-to-sound/
 ; https://www.nesdev.org/wiki/APU
@@ -35,7 +38,7 @@ mem_apu_pulse2_ct = $4007
 mem_apu_status = $4015
 
 
-CLEAR_APU:
+AUDIO_INIT:
         ldy #$13
 @loop:  lda @regs,y
         sta $4000,y
@@ -57,7 +60,12 @@ CLEAR_APU:
         .byte $30,$00,$00,$00
         .byte $00,$00,$00,$00
 
-PLAY_BEEP:
+AUDIO_NMI_UPDATE:
+    ; todo: play music
+    nop
+
+; actually just plays a beep
+AUDIO_START_MUSIC:
 
     LDA #%10011111
     STA mem_apu_pulse1_control

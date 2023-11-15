@@ -116,7 +116,7 @@ RESET:
 	STX $2001
 
 	; clear APU
-	JSR CLEAR_APU
+	JSR AUDIO_INIT
 
 	JSR WAIT_FOR_VBLANK
 
@@ -407,7 +407,8 @@ DRAW:
 
 ; ------------- AUDIO --------------------
 
-.include "audio.inc"
+;.include "audio.inc"
+.include "audio_fs.inc"
 
 ; ------------ SCENES --------------------
 
@@ -466,7 +467,7 @@ NMI:
 ; Load data for wanted scene, if it's not already loaded
 	LDX current_scene
 	CPX wanted_scene
-	BEQ nmi_draw
+	BEQ nmi_continue
 
 	SEI
 	LDX #$00 			; PPU, please hold while you receive new data.
@@ -485,14 +486,17 @@ NMI:
 	; skip drawing this frame since we're likely no longer in VBLANK
 	JMP nmi_cleanup
 
-nmi_draw:
+nmi_continue:
 
+; Play audio
+	JSR AUDIO_NMI_UPDATE
+; Draw graphics
 	JSR DRAW
-
+; Read input
 	READ_JOYPAD player_1, mem_JOYPAD1
 	READ_JOYPAD player_2, mem_JOYPAD2
 
-	; wake game loop now that we're done with vsync work
+; wake game loop now that we're done with vsync work
 	LDA #$00
 	STA sleeping
 
@@ -605,6 +609,9 @@ win_tilemap_palette:
 	.byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
 	.byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
 	.byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
+
+song_shatterhand:
+.include "../deps/famistudio/DemoSource/song_shatterhand_ca65.s"
 
 
 .segment "VECTORS"

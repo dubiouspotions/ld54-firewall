@@ -45,7 +45,7 @@ load_mainmenu_tilemap_color:
 	CPX #64
 	BNE load_mainmenu_tilemap_color
 
-	JSR PLAY_BEEP
+	JSR AUDIO_START_MUSIC
 	
 	RTS
 
