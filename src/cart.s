@@ -488,10 +488,11 @@ NMI:
 
 nmi_continue:
 
-; Play audio
-	JSR AUDIO_NMI_UPDATE
+
 ; Draw graphics
 	JSR DRAW
+; Play audio
+	JSR AUDIO_NMI_UPDATE
 ; Read input
 	READ_JOYPAD player_1, mem_JOYPAD1
 	READ_JOYPAD player_2, mem_JOYPAD2
