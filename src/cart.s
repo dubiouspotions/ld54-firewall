@@ -75,6 +75,7 @@ frame_counter:			.RES 1
 player_1:				.tag Player
 player_2:				.tag Player
 sleeping:				.RES 1
+nmi_lock:				.RES 1
 
 .segment "BSS"
 current_scene: 			.RES 1
@@ -452,6 +453,14 @@ NMI:
 	TYA
 	PHA
 
+; Prevent NMI re-entry
+	lda nmi_lock
+	beq @lock_nmi
+	jmp nmi_cleanup
+@lock_nmi:
+	lda #1
+	sta nmi_lock
+
 ; General housekeeping
 	LDX frame_counter
 	INX
@@ -484,7 +493,7 @@ NMI:
 	;CLI
 
 	; skip drawing this frame since we're likely no longer in VBLANK
-	JMP nmi_cleanup
+	JMP nmi_done
 
 nmi_continue:
 
@@ -501,6 +510,9 @@ nmi_continue:
 	LDA #$00
 	STA sleeping
 
+nmi_done:
+    lda #0
+    sta nmi_lock
 nmi_cleanup:
 	PLA
 	TAY
