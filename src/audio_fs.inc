@@ -34,8 +34,8 @@ AUDIO_NMI_UPDATE:
     rts
 
 AUDIO_START_MUSIC:
-    ldx #.lobyte(music_data_shatterhand)
-    ldy #.hibyte(music_data_shatterhand)
+    ldx #.lobyte(music_data_walloffire)
+    ldy #.hibyte(music_data_walloffire)
     lda #1 ; NTSC
     jsr famistudio_init
     lda #0
