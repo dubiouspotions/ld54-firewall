@@ -27,6 +27,14 @@ AUDIO_INIT:
     sta $4010 ; disable DMC IRQ
     lda #$40
     sta $4017 ; disable APU IRQ
+
+    lda #1 ; NTSC
+    jsr famistudio_init
+
+    ldx #<sounds
+    ldy #>sounds
+    jsr famistudio_sfx_init
+
     rts
 
 AUDIO_NMI_UPDATE:
@@ -40,5 +48,12 @@ AUDIO_START_MUSIC:
     jsr famistudio_init
     lda #0
     jsr famistudio_music_play
+
+    rts
+
+; Index of sound in A
+AUDIO_PLAY_SFX:
+	ldx #FAMISTUDIO_SFX_CH0
+	jsr famistudio_sfx_play
 
     rts

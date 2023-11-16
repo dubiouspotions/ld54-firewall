@@ -203,6 +203,9 @@ check_a:
 		; and set upwards velocity
 		LDA #<-$70
 		STA PLAYER + Player::vel + Vector1::ycoord
+
+		LDA #SND_JUMP
+		JSR AUDIO_PLAY_SFX
 check_b:
 	LDA PLAYER + Player::buttons
 	AND #BTN_B
@@ -210,6 +213,10 @@ check_b:
 		LDA PLAYER + Player::dash_cooldown
 		CMP #0
 		BNE done
+		
+		LDA #SND_DASH
+		JSR AUDIO_PLAY_SFX
+
 		LDA #40 ; cooldown time in frames
 		STA PLAYER + Player::dash_cooldown
 		; set max speed in the direction you're facing
@@ -445,6 +452,10 @@ animate_fire_done:
 	CMP #1
 	BNE no_win
 	INC ENEMY + Player::score
+
+	LDA #SND_BURN
+	JSR AUDIO_PLAY_SFX
+
 no_win:
 .endscope
 .endmacro
