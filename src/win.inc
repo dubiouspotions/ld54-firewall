@@ -119,6 +119,9 @@ UPDATE_WIN:
 	RTS
 
 restart_game:
+	LDA #SND_START
+	JSR AUDIO_PLAY_SFX
+
 	; TODO: blink the arrows or something!
 	LDA #Scenes::level
 	STA wanted_scene
