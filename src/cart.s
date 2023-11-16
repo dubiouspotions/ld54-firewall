@@ -315,7 +315,7 @@ done:
 	LDA frame_counter
 	AND #%00001000
 	BNE dont_draw_dead
-	LDA PLAYER + Player::flags
+	LDA SPRITE +  0 + Player::flags
 	ORA #%00000011
 	STA SPRITE +  0 + Sprite::flags
 	STA SPRITE +  4 + Sprite::flags
