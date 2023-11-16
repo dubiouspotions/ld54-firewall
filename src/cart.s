@@ -633,20 +633,28 @@ sounds:
 	.word @soundtable
 	.word @soundtable
 @soundtable:
-	.word @sfx_ntsc_megamanhit
-	.word @sfx_ntsc_megamanhit
-	.word @sfx_ntsc_megamanhit
-@sfx_ntsc_megamanhit:
-	.byte $85,$04,$84,$b3,$83,$ff,$8a,$0a,$89,$3f,$01,$84,$f3,$8a,$0b,$01
-	.byte $85,$05,$84,$32,$89,$f0,$01,$83,$f0,$01,$85,$01,$84,$07,$83,$f8
-	.byte $8a,$09,$89,$37,$01,$84,$2d,$8a,$08,$89,$3f,$01,$84,$53,$8a,$07
-	.byte $01,$84,$79,$8a,$06,$01,$84,$9f,$8a,$05,$01,$84,$c5,$8a,$04,$01
-	.byte $84,$eb,$8a,$03,$01,$85,$02,$84,$11,$8a,$02,$01,$84,$37,$8a,$01
-	.byte $01,$84,$5c,$8a,$00,$01,$8a,$0f,$01,$83,$f0,$00
+	.word @sfx_ntsc_dash
+	.word @sfx_ntsc_hit
+	.word @sfx_ntsc_jump
+	.word @sfx_ntsc_burn
+@sfx_ntsc_dash:
+	.byte $8a,$0c,$01,$89,$3d,$01,$89,$3f,$01,$89,$37,$01,$8a,$0b,$89,$30
+	.byte $01,$89,$3d,$01,$89,$3f,$01,$89,$37,$01,$89,$34,$01,$00
+@sfx_ntsc_hit:
+	.byte $8a,$0c,$01,$89,$3d,$01,$89,$3f,$01,$89,$37,$01,$8a,$0b,$89,$30
+	.byte $01,$89,$3d,$01,$89,$3f,$01,$89,$37,$01,$89,$34,$01,$00
+@sfx_ntsc_jump:	
+	.byte $87,$d5,$88,$00,$86,$8f,$89,$f0,$01,$87,$c9,$01,$87,$b3,$01,$86
+	.byte $80,$01,$87,$8e,$86,$8f,$01,$00
+@sfx_ntsc_burn:
+	.byte $89,$f0,$01,$8a,$0e,$89,$33,$01,$89,$36,$01,$89,$3a,$01,$89,$3b
+	.byte $01,$89,$3a,$02,$89,$39,$01,$89,$37,$01,$89,$36,$01,$89,$35,$03
+	.byte $89,$36,$01,$89,$34,$04,$89,$33,$02,$89,$32,$01,$00
 
 SND_DASH = 0
-SND_JUMP = 1
-SND_BURN = 2
+SND_HIT  = 1
+SND_JUMP = 2
+SND_BURN = 3
 
 .segment "VECTORS"
 	.addr NMI

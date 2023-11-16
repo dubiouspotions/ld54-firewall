@@ -337,6 +337,9 @@ done_falling:
 	LDA #0
 	STA PLAYER + Player::vel + Vector1::xcoord
 
+	LDA #SND_HIT
+	JSR AUDIO_PLAY_SFX
+
 	; sometimes we get stuck? push player away from us once maybe
 	MOVEMENT_PHYSICS_XY OTHER
 	
