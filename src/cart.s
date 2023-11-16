@@ -276,7 +276,7 @@ joy1_loop:
 	STX SPRITE +  4 + Sprite::ycoord
 	TXA
 	CLC
-	ADC #7
+	ADC #8
 	STA SPRITE +  8 + Sprite::ycoord
 	STA SPRITE + 12 + Sprite::ycoord
 
@@ -333,7 +333,7 @@ dont_draw_dead:
 	STX SPRITE +  8 + Sprite::xcoord
 	TXA
 	CLC
-	ADC #7
+	ADC #8
 	STA SPRITE +  4 + Sprite::xcoord
 	STA SPRITE + 12 + Sprite::xcoord
 
@@ -351,7 +351,7 @@ draw_flipped:
 	STX SPRITE +  12 + Sprite::xcoord
 	TXA
 	CLC
-	ADC #7
+	ADC #8
 	STA SPRITE +  0 + Sprite::xcoord
 	STA SPRITE +  8 + Sprite::xcoord
 
