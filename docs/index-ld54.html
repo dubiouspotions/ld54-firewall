@@ -2,7 +2,7 @@
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="style.css">
-  <title>Firewall [future] - A Dubious Potions game by Nevyn, Mascoll & Javve</title>
+  <title>Firewall (v. LD54) - A Dubious Potions game by Nevyn, Mascoll & Javve</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,7 +10,7 @@
   <link rel="icon" href="favicon.png"  type="image/png">
 
 </head>
-<body game="./game/firewall-future.nes">
+<body game="./game/firewall-ld54.nes">
   <div class="settings">
   <input id="rom" type="file">
   <button id="pause">Pause</button>
@@ -53,19 +53,24 @@
     </table>
   </div>
   <p>
-      <a href="https://ldjam.com/events/ludum-dare/54/firewall">Firewall</a> -
-      A <a href="https://twitter.com/dubious_potions">Dubious Potions</a> game by 
-      <a href="https://mas.to/@nevyn">Nevyn</a>, 
-      <a href="https://twitter.com/mascoll">Mascoll</a> & 
-      <a href="https://twitter.com/javve">Javve</a> for 
-      <a href="https://ldjam.com/events/ludum-dare/54">LD54</a>.<br>
-    You can also <a href="game/firewall-future.nes">download the ROM</a> and <a href="https://fceux.com">play it in an emulator</a>.
-    <a href="https://github.com/dubiouspotions/ld54-firewall">Full source on Github.</a><br/>
-    You're currently playing the latest version, not the LDJAM53 version.
-    <br>
-    Made playable on the web with NesJs, by angelo_wf (<a href="debug.html">Debugger</a>, <a href="nsfplayer.html">NsfJs</a>, <a href="https://github.com/angelo-wf/NesJs">source</a>).<br>
+    <a href="https://ldjam.com/events/ludum-dare/54/firewall">Firewall</a> -
+    A <a href="https://twitter.com/dubious_potions">Dubious Potions</a> jam game by 
+    <a href="https://mas.to/@nevyn">Nevyn</a>, 
+    <a href="https://twitter.com/mascoll">Mascoll</a> & 
+    <a href="https://twitter.com/javve">Javve</a>.<br><br>
 
-  </p>
+    Versions: <a href="index.html">Latest</a>, <b style="color: white;">Ludum Dare 53</b>, <a href="index-ndc23.html">NesDev Compo '23</a>.<br>
+  
+    <a href="game/firewall-ld54.nes">Download the ROM</a> to <a href="https://fceux.com">emulate</a>.
+    <a href="https://github.com/dubiouspotions/ld54-firewall">Source code.</a><br/>
+  
+    Web player: NesJs, by angelo_wf.<br>
+
+</p>
+
+    <audio id="audio-player" loop="true">
+      <source src="music.mp3" type="audio/mpeg" />
+    </audio>
 
   <script src="lib/zip.js"></script>
   <script src="lib/inflate.js"></script>
