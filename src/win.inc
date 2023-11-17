@@ -119,6 +119,9 @@ UPDATE_WIN:
 	RTS
 
 restart_game:
+	LDA #SND_START
+	JSR AUDIO_PLAY_SFX
+
 	; TODO: blink the arrows or something!
 	LDA #Scenes::level
 	STA wanted_scene
@@ -126,6 +129,6 @@ restart_game:
 	RTS
 
 DRAW_WIN:	
-	DRAW_PLAYER player_1, mem_sprites
-	DRAW_PLAYER player_2, mem_sprites + 4*4
+	DRAW_PLAYER player_1, mem_sprites, 		 $10, $01
+	DRAW_PLAYER player_2, mem_sprites + 4*4, $14, $05
 	RTS

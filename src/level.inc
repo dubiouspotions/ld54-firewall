@@ -170,7 +170,7 @@ check_movement:
 		BEQ check_up
 		BMI handle_negative
 		handle_positive:
-			CLC
+			SEC
 			SBC #walk_decel ; speed decrease per frame
 			STA PLAYER + Player::vel + Vector1::xcoord
 			JMP check_up
@@ -189,7 +189,7 @@ check_down:
 	BEQ check_a
 		nop
 check_a:
-	LDA PLAYER + Player::buttons
+	LDA PLAYER + Player::buttons_pressed
 	AND #BTN_A
 	BEQ check_b
 		; only allow jumps if we're on the ground
@@ -203,6 +203,9 @@ check_a:
 		; and set upwards velocity
 		LDA #<-$70
 		STA PLAYER + Player::vel + Vector1::ycoord
+
+		LDA #SND_JUMP
+		JSR AUDIO_PLAY_SFX
 check_b:
 	LDA PLAYER + Player::buttons
 	AND #BTN_B
@@ -210,6 +213,10 @@ check_b:
 		LDA PLAYER + Player::dash_cooldown
 		CMP #0
 		BNE done
+		
+		LDA #SND_DASH
+		JSR AUDIO_PLAY_SFX
+
 		LDA #40 ; cooldown time in frames
 		STA PLAYER + Player::dash_cooldown
 		; set max speed in the direction you're facing
@@ -294,10 +301,9 @@ done_falling:
 	CMP #0
 	BEQ no_collision
 
-	; can't collide if other player is dashing
-	LDA OTHER + Player::dash_cooldown
-	CMP #0
-	BNE no_collision
+	; can't collide if we have lower cooldown than them
+	CMP OTHER + Player::dash_cooldown
+	BCC no_collision
 
 	; are we on the right side of the left bounds of enemy?
 	LDA PLAYER + Player::pos + Vector2::xcoordhi
@@ -331,7 +337,12 @@ done_falling:
 	LDA #0
 	STA PLAYER + Player::vel + Vector1::xcoord
 
-	; TODO: sometimes we get stuck? push player away from us once maybe
+	LDA #SND_HIT
+	JSR AUDIO_PLAY_SFX
+
+	; sometimes we get stuck? push player away from us once maybe
+	MOVEMENT_PHYSICS_XY OTHER
+	
 
 no_collision:
 .endscope
@@ -444,6 +455,10 @@ animate_fire_done:
 	CMP #1
 	BNE no_win
 	INC ENEMY + Player::score
+
+	LDA #SND_BURN
+	JSR AUDIO_PLAY_SFX
+
 no_win:
 .endscope
 .endmacro
@@ -497,8 +512,8 @@ EVALUATE_WINNING_CONDITION:
 
 DRAW_LEVEL:
 ; Draw players
-	DRAW_PLAYER player_1, mem_sprites
-	DRAW_PLAYER player_2, mem_sprites + 4*4
+	DRAW_PLAYER player_1, mem_sprites,       $10, $01
+	DRAW_PLAYER player_2, mem_sprites + 4*4, $14, $05
 
 	; TODO: update the tilemap to match how far in the fire wall 
 	JSR DRAW_FIRE
