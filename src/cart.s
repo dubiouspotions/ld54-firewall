@@ -270,7 +270,46 @@ joy1_loop:
 
 .macro DRAW_PLAYER	PLAYER, SPRITE, PALETTE_OFFSET, BASE_COLOR
 .scope
-; draw y coordinate same always
+
+; pick sprite based on player state
+	LDA PLAYER + Player::flags
+	AND #%10000000
+	BEQ sprite_jump
+	LDA PLAYER + Player::vel + Vector1::xcoord
+	CMP #$0
+	BEQ sprite_standstill
+sprite_running:
+	LDA #$02
+	STA SPRITE +  0 + Sprite::index
+	LDA #$03
+	STA SPRITE +  4 + Sprite::index
+	LDA #$12
+	STA SPRITE +  8 + Sprite::index
+	LDA #$13
+	STA SPRITE + 12 + Sprite::index
+	JMP done_sprite
+sprite_jump:
+	LDA #$20
+	STA SPRITE +  0 + Sprite::index
+	LDA #$21
+	STA SPRITE +  4 + Sprite::index
+	LDA #$30
+	STA SPRITE +  8 + Sprite::index
+	LDA #$31
+	STA SPRITE + 12 + Sprite::index
+	JMP done_sprite
+sprite_standstill:
+	LDA #$00
+	STA SPRITE +  0 + Sprite::index
+	LDA #$01
+	STA SPRITE +  4 + Sprite::index
+	LDA #$10
+	STA SPRITE +  8 + Sprite::index
+	LDA #$11
+	STA SPRITE + 12 + Sprite::index
+
+done_sprite:
+; draw y coordinate same always, no vert flipping (x is further down)
 	LDX PLAYER + Player::pos + Vector2::ycoordhi
 	STX SPRITE +  0 + Sprite::ycoord
 	STX SPRITE +  4 + Sprite::ycoord
