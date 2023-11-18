@@ -88,6 +88,7 @@ UPDATE_LEVEL:
 	CPX #1
 	BEQ skip_update_if_winner
 
+	JSR CPU_PLAYER_ACTION
 	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
 	JSR MOVE_FIRE
@@ -99,6 +100,12 @@ skip_update_if_winner:
 	
 	RTS
 
+; ---- player 2 cpu
+CPU_PLAYER_ACTION:
+	CLC
+	LDA #BTN_LEFT
+	STA player_2 + Player::buttons
+	RTS
 
 ; ---- input handling
 

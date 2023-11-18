@@ -46,7 +46,9 @@ load_mainmenu_tilemap_color:
 	BNE load_mainmenu_tilemap_color
 
 	JSR AUDIO_START_MUSIC
-	
+	LDX p2_cpu
+	INX
+	STX p2_cpu
 	RTS
 
 UPDATE_MAINMENU:

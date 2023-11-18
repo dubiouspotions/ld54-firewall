@@ -90,6 +90,8 @@ win_palette_index:		.RES 1
 winner:					.RES 1
 logo_counter:			.RES 1
 buttons_tmp:			.RES 1
+p2_cpu:			.RES 1
+p2_action:  .RES 1
 
 indirect_ptr:			.RES 2
 indirect_nmi_ptr:		.RES 2
@@ -544,7 +546,7 @@ nmi_continue:
 	JSR AUDIO_NMI_UPDATE
 ; Read input
 	READ_JOYPAD player_1, mem_JOYPAD1
-	READ_JOYPAD player_2, mem_JOYPAD2
+	; READ_JOYPAD player_2, mem_JOYPAD2 ; p2_action
 
 ; wake game loop now that we're done with vsync work
 	LDA #$00
