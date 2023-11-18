@@ -102,10 +102,37 @@ skip_update_if_winner:
 
 ; ---- player 2 cpu
 CPU_PLAYER_ACTION:
+	; reset cpu controls
 	CLC
-	LDA #BTN_LEFT
-	STA player_2 + Player::buttons
-	RTS
+	LDA #0
+	STA player_2 + Player::buttons_pressed
+	
+	; store player 1 position in x
+	LDX player_1 + Player::pos + Vector2::xcoordhi
+
+	; jump if closer than 5 pixels
+	CPX player_2 + Player::pos + Vector2::xcoordhi
+	BNE not_jump
+		CLC
+		LDA #BTN_A
+		STA player_2 + Player::buttons_pressed
+		RTS
+	not_jump:
+
+	; dash if closer than 10 pixels
+
+	; run twoards player 1
+	CPX player_2 + Player::pos + Vector2::xcoordhi
+	BMI not_run_right
+		CLC
+		LDA #BTN_RIGHT
+		STA player_2 + Player::buttons
+		RTS
+	not_run_right:
+		CLC
+		LDA #BTN_LEFT
+		STA player_2 + Player::buttons
+		RTS
 
 ; ---- input handling
 
