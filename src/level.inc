@@ -133,18 +133,6 @@ CPU_PLAYER_ACTION:
 	JSR PRNG
 	TAY ; store random number in Y, for later use
 
-	; ; store player 1 position in x
-	; LDX player_1 + Player::pos + Vector2::xcoordhi
-
-	; ; jump if closer than 5 pixels
-	; CPX player_2 + Player::pos + Vector2::xcoordhi
-	; BNE not_jump
-	; 	CLC
-	; 	LDA #BTN_A
-	; 	STA player_2 + Player::buttons_pressed
-	; 	RTS
-	; not_jump:
-
 	; if face left, dash left if close enough, else check dash right
 	LDA player_2 + Player::flags
 	AND #%01000000
@@ -216,14 +204,33 @@ done_dashing:
 	LDX player_1 + Player::pos + Vector2::xcoordhi
 	CPX player_2 + Player::pos + Vector2::xcoordhi
 	BMI not_run_right 
-		CLC
-		LDA #BTN_RIGHT
-		STA player_2 + Player::buttons
+		CPY #100
+		BCS skip_run_right
+			CLC
+			LDA #BTN_RIGHT
+			STA player_2 + Player::buttons
+			RTS
+		skip_run_right:
+		CPY #5
+		BCS skip_random_run_left
+			CLC
+			LDA #BTN_LEFT
+			STA player_2 + Player::buttons
+		skip_random_run_left:
 		RTS
 	not_run_right:
-		CLC
-		LDA #BTN_LEFT
-		STA player_2 + Player::buttons
+		CPY #100
+		BCS skip_run_left
+			CLC
+			LDA #BTN_LEFT
+			STA player_2 + Player::buttons
+		skip_run_left:
+		CPY #5
+		BCS skip_random_run_right
+			CLC
+			LDA #BTN_RIGHT
+			STA player_2 + Player::buttons
+		skip_random_run_right:
 		RTS
 
 ; ---- input handling
