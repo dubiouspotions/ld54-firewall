@@ -2,7 +2,7 @@ INITIALIZE_LEVEL:
 ; initialize game data
 	LDA #70
 	STA player_1 + Player::pos + Vector2::xcoordhi
-	LDA #180
+	LDA #100 ; 180
 	STA player_2 + Player::pos + Vector2::xcoordhi
 	LDA #$80
 	STA player_1 + Player::pos + Vector2::ycoordhi
@@ -101,6 +101,7 @@ skip_update_if_winner:
 	JSR HANDLE_WIN_STATE
 	
 	RTS
+	
 
 ; ---- player 2 cpu
 CPU_PLAYER_ACTION:
@@ -125,48 +126,64 @@ CPU_PLAYER_ACTION:
 	LDA player_2 + Player::flags
 	AND #%01000000
 	BNE dash_right_if_close ; check if facing left, otherwise jump
-	; 	LDX player_1 + Player::pos + Vector2::xcoordhi
-	; 	CPX player_2 + Player::pos + Vector2::xcoordhi
-	; 	BPL done_dashing ; if we're to the right of player 1, don't dash
-	; 		LDA player_1 + Player::pos + Vector2::xcoordhi
-	; 		CLC
-	; 		ADC #30 ; add 5 and see if we're on other side (means we're close enough to jump)
-	; 		CMP player_2 + Player::pos + Vector2::xcoordhi
-	; 		BMI skip_left_dash
-	; 			CLC
-	; 			LDA #BTN_A
-	; 			STA player_2 + Player::buttons_pressed
-	; 			RTS ; do dash then return 
-	; 		skip_left_dash: ; if not dash, mayby jump?
-	; 		LDA player_1 + Player::pos + Vector2::xcoordhi 
-	; 		CLC
-	; 		ADC #45 ; add 5 and see if we're on other side (means we're close enough to jump)
-	; 		CMP player_2 + Player::pos + Vector2::xcoordhi
-	; 		BMI skip_left_jump
-	; 			CLC
-	; 			LDA #BTN_B ; DON'T WORK?
-	; 			STA player_2 + Player::buttons_pressed
-	; 			RTS ; do dash then return 
-	; 		skip_left_jump:
+		LDX player_1 + Player::pos + Vector2::xcoordhi
+		CPX player_2 + Player::pos + Vector2::xcoordhi
+		BPL done_dashing ; if we're to the right of player 1, don't dash
+			; LDA player_1 + Player::pos + Vector2::xcoordhi
+			; CLC
+			; ADC #30 ; add 5 and see if we're on other side (means we're close enough to jump)
+			; CMP player_2 + Player::pos + Vector2::xcoordhi
+			; BMI skip_left_dash
+			; 	CLC
+			; 	LDA #BTN_B ; DON'T WORK?
+			; 	STA player_2 + Player::buttons_pressed
+			; 	RTS ; do dash then return 
+			; skip_left_dash: ; if not dash, mayby jump?
+			LDA player_1 + Player::pos + Vector2::xcoordhi 
+			CLC
+			ADC #45 ; add 5 and see if we're on other side (means we're close enough to jump)
+			CMP player_2 + Player::pos + Vector2::xcoordhi
+			BMI skip_left_jump
+				CLC
+				LDA #BTN_A
+				STA player_2 + Player::buttons_pressed
+				RTS ; do dash then return 
+			skip_left_jump:
 
 		jmp done_dashing
 	dash_right_if_close:
-		LDX player_1 + Player::pos + Vector2::xcoordhi
-		CPX player_2 + Player::pos + Vector2::xcoordhi
-		BMI done_dashing ; if we're to the right of player 1, don't dash
+		LDX player_2 + Player::pos + Vector2::xcoordhi
+		CPX player_1 + Player::pos + Vector2::xcoordhi
+		BPL done_dashing ; if we're to the right of player 1, don't dash
+			; LDA player_2 + Player::pos + Vector2::xcoordhi
+			; CLC
+			; ADC #16 ; player width
+			; ADC #16 ; distance for dash
+			; CMP player_1 + Player::pos + Vector2::xcoordhi
+			; BMI skip_right_dash
+			; 	CLC
+			; 	LDA #BTN_B ; DON'T WORK?
+			; 	STA player_2 + Player::buttons_pressed
+			; 	RTS ; do dash then return 
+			; skip_right_dash:
+			LDA player_2 + Player::pos + Vector2::xcoordhi
 			CLC
-			LDA #BTN_A
-			STA player_2 + Player::buttons_pressed
-			RTS ; do dash then return 
+			ADC #16 ; player width
+			ADC #10 ; distance for jump
+			CMP player_1 + Player::pos + Vector2::xcoordhi
+			BMI skip_right_jump
+				CLC
+				LDA #BTN_A
+				STA player_2 + Player::buttons_pressed
+				RTS ; do dash then return 
+			skip_right_jump:
 
-		; dash facing right
 	jmp done_dashing
 
 done_dashing:
-	RTS
-	; run twoards player 1
+	LDX player_1 + Player::pos + Vector2::xcoordhi
 	CPX player_2 + Player::pos + Vector2::xcoordhi
-	BMI not_run_right
+	BMI not_run_right 
 		CLC
 		LDA #BTN_RIGHT
 		STA player_2 + Player::buttons
