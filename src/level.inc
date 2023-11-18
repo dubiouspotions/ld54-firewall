@@ -119,8 +119,53 @@ CPU_PLAYER_ACTION:
 		RTS
 	not_jump:
 
-	; dash if closer than 10 pixels
+	; if face left, dash left if close enough, else check dash right
+	LDA player_2 + Player::flags
+	AND #%01000000
+	BNE dash_right_if_close
+		; dash facing left
+		LDX player_1 + Player::pos + Vector2::xcoordhi
+		CPX player_2 + Player::pos + Vector2::xcoordhi
+		BPL done_dashing ; if we're to the right of player 1, don't dash
+		  ; we're left. check if should dash, or closer, jump
+			LDA player_1 + Player::pos + Vector2::xcoordhi
+			CLC
+			ADC #15 ; add 5 and see if we're on other side (means we're close enough to jump)
+			CMP player_2 + Player::pos + Vector2::xcoordhi
+			BMI skip_left_dash
+				CLC
+				LDA #BTN_A
+				STA player_2 + Player::buttons_pressed
+				RTS ; do dash then return 
+			skip_left_dash:
+			; should jump?
+			LDA player_1 + Player::pos + Vector2::xcoordhi
+			CLC
+			ADC #30 ; add 5 and see if we're on other side (means we're close enough to jump)
+			CMP player_2 + Player::pos + Vector2::xcoordhi
+			BMI skip_left_jump
+				CLC
+				LDA #BTN_B ; DON'T WORK?
+				STA player_2 + Player::buttons_pressed
+				RTS ; do dash then return 
+			skip_left_jump:
+			
+			
+			; LDA #BTN_A
+			; STA player_2 + Player::buttons_pressed
+			; RTS ; do dash then return 
+		; Om X är större än A, då skiter vi i detta helst
 
+
+		; LDY #0
+		; ADC 
+
+	jmp done_dashing
+	dash_right_if_close:
+		; dash facing right
+	jmp done_dashing
+
+done_dashing:
 	; run twoards player 1
 	CPX player_2 + Player::pos + Vector2::xcoordhi
 	BMI not_run_right
