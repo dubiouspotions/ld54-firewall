@@ -13,6 +13,9 @@ INITIALIZE_LEVEL:
 	LDA #%01000000 ; flip player 2 right
 	STA player_2 + Player::flags
 
+	LDX #10
+	STX prng_seed
+
 	LDX	#$00
 	STX fire_location_left
 	LDX	#$F8
@@ -101,7 +104,23 @@ skip_update_if_winner:
 	JSR HANDLE_WIN_STATE
 	
 	RTS
-	
+
+
+PRNG:
+	CLC
+	ldy #8     ; iteration count (generates 8 bits)
+	lda prng_seed+0
+:
+	asl        ; shift the register
+	rol prng_seed+1
+	bcc :+
+	eor #$39   ; apply XOR feedback whenever a 1 bit is shifted out
+:
+	dey
+	bne :--
+	sta prng_seed+0
+	cmp #0     ; reload flags
+	rts
 
 ; ---- player 2 cpu
 CPU_PLAYER_ACTION:
@@ -109,18 +128,22 @@ CPU_PLAYER_ACTION:
 	CLC
 	LDA #0
 	STA player_2 + Player::buttons_pressed
+	STA player_2 + Player::buttons
 	
-	; store player 1 position in x
-	LDX player_1 + Player::pos + Vector2::xcoordhi
+	JSR PRNG
+	TAY ; store random number in Y, for later use
 
-	; jump if closer than 5 pixels
-	CPX player_2 + Player::pos + Vector2::xcoordhi
-	BNE not_jump
-		CLC
-		LDA #BTN_A
-		STA player_2 + Player::buttons_pressed
-		RTS
-	not_jump:
+	; ; store player 1 position in x
+	; LDX player_1 + Player::pos + Vector2::xcoordhi
+
+	; ; jump if closer than 5 pixels
+	; CPX player_2 + Player::pos + Vector2::xcoordhi
+	; BNE not_jump
+	; 	CLC
+	; 	LDA #BTN_A
+	; 	STA player_2 + Player::buttons_pressed
+	; 	RTS
+	; not_jump:
 
 	; if face left, dash left if close enough, else check dash right
 	LDA player_2 + Player::flags
@@ -144,10 +167,15 @@ CPU_PLAYER_ACTION:
 			ADC #45 ; add 5 and see if we're on other side (means we're close enough to jump)
 			CMP player_2 + Player::pos + Vector2::xcoordhi
 			BMI skip_left_jump
-				CLC
-				LDA #BTN_A
-				STA player_2 + Player::buttons_pressed
-				RTS ; do dash then return 
+				LDA player_2 + Player::flags
+				AND #%10000000
+				BEQ skip_left_jump
+					CPY #3
+					BCS skip_left_jump
+						CLC
+						LDA #BTN_A
+						STA player_2 + Player::buttons_pressed
+						RTS ; do dash then return 
 			skip_left_jump:
 
 		jmp done_dashing
@@ -172,10 +200,14 @@ CPU_PLAYER_ACTION:
 			ADC #10 ; distance for jump
 			CMP player_1 + Player::pos + Vector2::xcoordhi
 			BMI skip_right_jump
-				CLC
-				LDA #BTN_A
-				STA player_2 + Player::buttons_pressed
-				RTS ; do dash then return 
+				LDA player_2 + Player::flags
+				AND #%10000000
+				BEQ skip_right_jump
+					CPY #3
+					BCS skip_right_jump
+						LDX #BTN_A
+						STX player_2 + Player::buttons_pressed
+						RTS ; do dash then return 
 			skip_right_jump:
 
 	jmp done_dashing

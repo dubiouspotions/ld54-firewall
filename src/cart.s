@@ -92,6 +92,7 @@ logo_counter:			.RES 1
 buttons_tmp:			.RES 1
 p2_cpu:			.RES 1
 p2_action:  .RES 1
+prng_seed: .RES 2
 
 indirect_ptr:			.RES 2
 indirect_nmi_ptr:		.RES 2
