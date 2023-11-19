@@ -146,18 +146,20 @@ CPU_PLAYER_ACTION:
 			
 			; dashing
 			LDA player_2 + Player::dash_cooldown
-			CMP #0
+			CMP #0 ; is the cooldown ready
 			BNE skip_left_dash
 				LDA player_1 + Player::pos + Vector2::xcoordhi
 				CLC
 				ADC #30 ; add 5 and see if we're on other side (means we're close enough to jump)
 				CMP player_2 + Player::pos + Vector2::xcoordhi
 				BMI skip_left_dash
-					CLC
-					LDA #BTN_B ; DON'T WORK?
-					STA player_2 + Player::buttons_pressed
-					STA player_2 + Player::buttons
-					RTS ; do dash then return 
+					CPY #10
+					BCS skip_left_dash
+						CLC
+						LDA #BTN_B
+						STA player_2 + Player::buttons_pressed
+						STA player_2 + Player::buttons
+						RTS ; do dash then return 
 			skip_left_dash: ; if not dash, mayby jump?
 
 			; jumping
@@ -187,7 +189,7 @@ CPU_PLAYER_ACTION:
 			
 			; dashing
 			LDA player_2 + Player::dash_cooldown
-			CMP #0
+			CMP #0 ; is the cooldown ready
 			BNE skip_right_dash
 				LDA player_2 + Player::pos + Vector2::xcoordhi
 				CLC
@@ -195,11 +197,13 @@ CPU_PLAYER_ACTION:
 				ADC #16 ; distance for dash
 				CMP player_1 + Player::pos + Vector2::xcoordhi
 				BMI skip_right_dash
-					CLC
-					LDA #BTN_B ; DON'T WORK?
-					STA player_2 + Player::buttons_pressed
-					STA player_2 + Player::buttons
-					RTS ; do dash then return 
+					CPY #10
+					BCS skip_right_dash
+						CLC
+						LDA #BTN_B
+						STA player_2 + Player::buttons_pressed
+						STA player_2 + Player::buttons
+						RTS ; do dash then return 
 			skip_right_dash:
 
 			; jumping
