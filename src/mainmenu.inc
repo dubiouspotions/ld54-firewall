@@ -56,11 +56,26 @@ UPDATE_MAINMENU:
 	LDA player_1 + Player::buttons
 	AND #BTN_START
 	BNE start_game
+
 	LDA player_2 + Player::buttons
 	AND #BTN_START
 	BNE start_game
 
+	LDA player_2 + Player::buttons
+	AND #BTN_A
+	BNE activate_p2
 	RTS
+
+activate_p2:
+	LDX p2_cpu
+	INX
+	STX p2_cpu
+	CLC
+	LDA #0
+	STA player_2 + Player::buttons_pressed
+	STA player_2 + Player::buttons
+	RTS
+
 start_game:
 	LDA #SND_START
 	LDX #FAMISTUDIO_SFX_CH0
