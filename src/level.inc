@@ -132,12 +132,13 @@ CPU_PLAYER_ACTION:
 
 	; if face left, dash left if close enough, else check dash right
 	LDA player_2 + Player::flags
-	AND #%01000000
-	BNE dash_right_if_close ; check if facing left, otherwise jump
+	AND #%01000000 ; is facing left?
+	BNE dash_right_if_close 
 		LDX player_1 + Player::pos + Vector2::xcoordhi
 		CPX player_2 + Player::pos + Vector2::xcoordhi
 		BPL done_dashing ; if we're to the right of player 1, don't dash
 			
+			; dashing
 			LDA player_2 + Player::dash_cooldown
 			CMP #0
 			BNE skip_left_dash
@@ -153,6 +154,7 @@ CPU_PLAYER_ACTION:
 					RTS ; do dash then return 
 			skip_left_dash: ; if not dash, mayby jump?
 
+			; jumping
 			LDA player_1 + Player::pos + Vector2::xcoordhi 
 			CLC
 			ADC #45 ; add 5 and see if we're on other side (means we're close enough to jump)
@@ -170,11 +172,14 @@ CPU_PLAYER_ACTION:
 			skip_left_jump:
 
 		jmp done_dashing
-	dash_right_if_close:
+
+	; if face right 
+	dash_right_if_close: 
 		LDX player_2 + Player::pos + Vector2::xcoordhi
 		CPX player_1 + Player::pos + Vector2::xcoordhi
 		BPL done_dashing ; if we're to the right of player 1, don't dash
 			
+			; dashing
 			LDA player_2 + Player::dash_cooldown
 			CMP #0
 			BNE skip_right_dash
@@ -191,6 +196,7 @@ CPU_PLAYER_ACTION:
 					RTS ; do dash then return 
 			skip_right_dash:
 
+			; jumping
 			LDA player_2 + Player::pos + Vector2::xcoordhi
 			CLC
 			ADC #16 ; player width
@@ -207,34 +213,34 @@ CPU_PLAYER_ACTION:
 						RTS ; do dash then return 
 			skip_right_jump:
 
-	jmp done_dashing
+	done_dashing:
 
-done_dashing:
+	; run left or right
 	LDX player_1 + Player::pos + Vector2::xcoordhi
 	CPX player_2 + Player::pos + Vector2::xcoordhi
-	BMI not_run_right 
-		CPY #100
-		BCS skip_run_right
+	BMI not_run_right ; run right if p1 is right of p2
+		CPY #100 ; only press arrow ~50% of the time
+		BCS skip_run_right 
 			CLC
 			LDA #BTN_RIGHT
 			STA player_2 + Player::buttons
 			RTS
 		skip_run_right:
-		CPY #5
+		CPY #5 ; randomly turn around ~2% of the time
 		BCS skip_random_run_left
 			CLC
 			LDA #BTN_LEFT
 			STA player_2 + Player::buttons
 		skip_random_run_left:
 		RTS
-	not_run_right:
-		CPY #100
+	not_run_right: ; run left if p1 is left of p2
+		CPY #100 ; only press arrow ~50% of the time
 		BCS skip_run_left
 			CLC
 			LDA #BTN_LEFT
 			STA player_2 + Player::buttons
 		skip_run_left:
-		CPY #5
+		CPY #5 ; randomly turn around ~2% of the time
 		BCS skip_random_run_right
 			CLC
 			LDA #BTN_RIGHT
