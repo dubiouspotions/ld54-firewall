@@ -547,17 +547,7 @@ nmi_continue:
 	JSR AUDIO_NMI_UPDATE
 ; Read input
 	READ_JOYPAD player_1, mem_JOYPAD1
-
-	LDY current_scene
-	CPY #Scenes::level
-	BNE not_level
-		LDX p2_is_human
-		CPX #0
-		BEQ p2_is_cpu
-			READ_JOYPAD player_2, mem_JOYPAD2
-	not_level:
 	READ_JOYPAD player_2, mem_JOYPAD2
-	p2_is_cpu:
 
 ; wake game loop now that we're done with vsync work
 	LDA #$00
