@@ -54,10 +54,10 @@ UPDATE_LOGO:
 	CPX #100
 	BEQ go_to_main
 
-	LDA player_1 + Player::buttons
+	LDA player_1 + Player::buttons_pressed
 	AND #BTN_START
 	BNE go_to_main
-	LDA player_2 + Player::buttons
+	LDA player_2 + Player::buttons_pressed
 	AND #BTN_START
 	BNE go_to_main
 	

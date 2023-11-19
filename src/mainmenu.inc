@@ -47,33 +47,29 @@ load_mainmenu_tilemap_color:
 
 	LDA #0
 	JSR AUDIO_START_MUSIC
-	; LDX p2_cpu
-	; INX
-	; STX p2_cpu
 	RTS
 
 UPDATE_MAINMENU:
-	LDA player_1 + Player::buttons
+	LDA player_1 + Player::buttons_pressed
 	AND #BTN_START
 	BNE start_game
 
-	LDA player_2 + Player::buttons
+	LDA player_2 + Player::buttons_pressed
 	AND #BTN_START
 	BNE start_game
 
-	LDA player_2 + Player::buttons
+	LDA player_2 + Player::buttons_pressed
 	AND #BTN_A
 	BNE activate_p2
 	RTS
 
 activate_p2:
-	LDX p2_cpu
-	INX
-	STX p2_cpu
-	CLC
+	LDX #1
+	STX p2_is_human
 	LDA #0
 	STA player_2 + Player::buttons_pressed
 	STA player_2 + Player::buttons
+
 	RTS
 
 start_game:
@@ -88,5 +84,38 @@ start_game:
 	RTS
 
 
-DRAW_MAINMENU:	
+DRAW_MAINMENU:
+	LDA p2_is_human
+	CMP #0
+	BEQ p2_isnt_human
+
+	; replace text under player 2
+	LDX #$22
+	STX $2006
+	LDX #$F2
+	STX $2006
+	
+	LDX #$DF
+	STX $2007
+	STX $2007
+	LDX #$45
+	STX $2007
+	LDX #$DF
+	STX $2007
+	LDX #$EB
+	STX $2007
+	LDX #$EC
+	STX $2007
+	LDX #$DF
+	STX $2007
+	STX $2007
+	STX $2007
+	STX $2007
+
+	; WHY do I have to reset scroll after modifying tilemap??
+	LDA #$00
+	STA $2005
+	STA $2005
+
+p2_isnt_human:
 	RTS

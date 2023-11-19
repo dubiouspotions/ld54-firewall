@@ -92,7 +92,7 @@ UPDATE_LEVEL:
 	CPX #1
 	BEQ skip_update_if_winner
 
-	LDX p2_cpu
+	LDX p2_is_human
 	CPX #0
 	BNE skip_p2_cpu
 		JSR CPU_PLAYER_ACTION
