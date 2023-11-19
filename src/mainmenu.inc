@@ -45,8 +45,30 @@ load_mainmenu_tilemap_color:
 	CPX #64
 	BNE load_mainmenu_tilemap_color
 
+	; Hide gameplay stuff
+	CLC
+	LDY #$00
+	LDA mem_fire_sprites
+	@hide_fire_sprites:
+		LDA #$F1
+		STA mem_fire_sprites, Y
+		INY
+		INY
+		INY
+		INY
+		CPY #128
+		BNE @hide_fire_sprites
+	LDX #$F1
+	STX player_1 + Player::pos + Vector2::ycoordhi
+	STX player_2 + Player::pos + Vector2::ycoordhi
+
 	LDA #0
 	JSR AUDIO_START_MUSIC
+
+	LDA #0
+	STA player_1 + Player::score
+	STA player_2 + Player::score
+
 	RTS
 
 UPDATE_MAINMENU:
@@ -69,6 +91,10 @@ activate_p2:
 	LDA #0
 	STA player_2 + Player::buttons_pressed
 	STA player_2 + Player::buttons
+
+	LDA #SND_P2_JOINED
+	LDX #FAMISTUDIO_SFX_CH0
+	JSR AUDIO_PLAY_SFX
 
 	RTS
 
@@ -118,4 +144,7 @@ DRAW_MAINMENU:
 	STA $2005
 
 p2_isnt_human:
+
+	DRAW_PLAYER player_1, mem_sprites, 		 $10, $01
+	DRAW_PLAYER player_2, mem_sprites + 4*4, $14, $05
 	RTS

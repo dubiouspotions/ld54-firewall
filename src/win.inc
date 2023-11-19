@@ -111,12 +111,29 @@ load_win_tilemap_color:
 
 
 UPDATE_WIN:
-  LDA player_1 + Player::buttons
+	JSR CHECK_IF_PLAYER_JOINED_WIN
+
+    LDA player_1 + Player::buttons
 	AND #BTN_START
 	BNE restart_game
 	LDA player_2 + Player::buttons
 	AND #BTN_START
 	BNE restart_game
+	RTS
+
+CHECK_IF_PLAYER_JOINED_WIN:
+	LDA player_2 + Player::buttons_pressed
+	AND #BTN_A
+	BEQ @nope
+	; ok, player 2 wants to join!
+	LDA #1
+	STA p2_is_human
+	LDX #Scenes::mainmenu
+	STX wanted_scene
+	LDA #SND_P2_JOINED
+	LDX #FAMISTUDIO_SFX_CH0
+	JSR AUDIO_PLAY_SFX
+@nope:
 	RTS
 
 restart_game:

@@ -95,6 +95,7 @@ UPDATE_LEVEL:
 	LDX p2_is_human
 	CPX #0
 	BNE skip_p2_cpu
+		JSR CHECK_IF_PLAYER_JOINED
 		JSR CPU_PLAYER_ACTION
 	skip_p2_cpu:
 	JSR RESPOND_TO_INPUT
@@ -108,6 +109,20 @@ skip_update_if_winner:
 	
 	RTS
 
+CHECK_IF_PLAYER_JOINED:
+	LDA player_2 + Player::buttons_pressed
+	AND #BTN_A
+	BEQ @nope
+	; ok, player 2 wants to join!
+	LDA #1
+	STA p2_is_human
+	LDX #Scenes::mainmenu
+	STX wanted_scene
+	LDA #SND_P2_JOINED
+	LDX #FAMISTUDIO_SFX_CH0
+	JSR AUDIO_PLAY_SFX
+@nope:
+	RTS
 
 PRNG:
 	CLC
@@ -636,7 +651,7 @@ HANDLE_WIN_STATE:
 	CPX #100
 	BNE not_win_screen_yet
 	LDX #Scenes::win
-  STX wanted_scene
+	STX wanted_scene
 not_win_screen_yet:
 
 	LDX win_palette_index
