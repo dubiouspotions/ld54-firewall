@@ -138,7 +138,7 @@ DRAW_MAINMENU:
 	STX $2007
 	STX $2007
 
-	; WHY do I have to reset scroll after modifying tilemap??
+	; reset scroll after messing with PPUADDR
 	LDA #$00
 	STA $2005
 	STA $2005

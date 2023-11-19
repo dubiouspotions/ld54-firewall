@@ -48,6 +48,32 @@ load_win_tilemap_p4:
 	CPX #0
 	BNE load_win_tilemap_p4
 
+	LDA p2_is_human
+	CMP #0
+	BNE @dont_replace_text
+	; replace text under player 2
+	LDX #$20
+	STX $2006
+	LDX #$93
+	STX $2006
+	
+	LDX #$DF
+	STX $2007
+	STX $2007
+	STX $2007
+	STX $2007
+	LDX #$8D
+	STX $2007
+	LDX #$BB
+	STX $2007
+	LDX #$CB
+	STX $2007
+	LDX #$DF
+	STX $2007
+	STX $2007
+	STX $2007
+@dont_replace_text:
+
 ; write our first level's palette data to the first nametable
 	LDA #$23
 	STA $2006
