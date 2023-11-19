@@ -692,8 +692,9 @@ DRAW_LEVEL:
 	DRAW_PLAYER player_1, mem_sprites,       $10, $01
 	DRAW_PLAYER player_2, mem_sprites + 4*4, $14, $05
 
-	; TODO: update the tilemap to match how far in the fire wall 
+	JSR DRAW_BURNT_GROUND
 	JSR DRAW_FIRE
+	
 	
 	RTS
 
@@ -759,4 +760,98 @@ DRAW_FIRE:
 		PLA
 		CPY #128
 		BNE draw_right_fire
+	RTS
+
+DRAW_BURNT_GROUND:
+	LDA fire_location_left
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	TAY
+	; A now contains index of left column to burn
+
+ 	bit $2002 ; reset ppu latch
+
+	; figure out which column to burn
+	CPY #1
+	BEQ @col_1
+	CPY #2
+	BEQ @col_2
+	; .. and so on
+
+	JMP @done
+
+@col_1:
+	LDA #$23
+	STA $2006
+	LDA #$E0
+	STA $2006
+	LDA #%00101111
+	STA $2007
+	LDA #$23
+	STA $2006
+	LDA #$E8
+	STA $2006
+	LDA #%00100010
+	STA $2007
+
+	LDA #$23
+	STA $2006
+	LDA #$E7
+	STA $2006
+	LDA #%10001111
+	STA $2007
+	LDA #$23
+	STA $2006
+	LDA #$EF
+	STA $2006
+	LDA #%10001000
+	STA $2007
+	JMP @done
+@col_2:
+	LDA #$23
+	STA $2006
+	LDA #$E0
+	STA $2006
+	LDA #%10101111
+	STA $2007
+	LDA #$23
+	STA $2006
+	LDA #$E8
+	STA $2006
+	LDA #%10101010
+	STA $2007
+
+	LDA #$23
+	STA $2006
+	LDA #$E7
+	STA $2006
+	LDA #%10101111
+	STA $2007
+	LDA #$23
+	STA $2006
+	LDA #$EF
+	STA $2006
+	LDA #%10101010
+	STA $2007
+	JMP @done
+@col_3:
+@col_4:
+@col_5:
+@col_6:
+@col_7:
+@col_8:
+
+@done:
+	; must reset scroll after touching PPUADDR
+	LDA #$20
+	STA $2006
+	LDA #$00
+	STA $2006
+
+	LDA #$00
+	STA $2005
+	STA $2005
+
 	RTS
