@@ -12,6 +12,8 @@ INITIALIZE_LEVEL:
 
 	LDX #10
 	STX prng_seed
+	LDA #1
+	JSR AUDIO_START_MUSIC
 
 	LDX	#$00
 	STX fire_location_left
@@ -353,6 +355,7 @@ check_a:
 		STA PLAYER + Player::vel + Vector1::ycoord
 
 		LDA #SND_JUMP
+		LDX #FAMISTUDIO_SFX_CH0
 		JSR AUDIO_PLAY_SFX
 check_b:
 	LDA PLAYER + Player::buttons
@@ -363,6 +366,7 @@ check_b:
 		BNE done
 		
 		LDA #SND_DASH
+		LDX #FAMISTUDIO_SFX_CH0
 		JSR AUDIO_PLAY_SFX
 
 		LDA #40 ; cooldown time in frames
@@ -486,6 +490,7 @@ done_falling:
 	STA PLAYER + Player::vel + Vector1::xcoord
 
 	LDA #SND_HIT
+	LDX #FAMISTUDIO_SFX_CH1
 	JSR AUDIO_PLAY_SFX
 
 	; sometimes we get stuck? push player away from us once maybe
@@ -605,6 +610,7 @@ animate_fire_done:
 	INC ENEMY + Player::score
 
 	LDA #SND_BURN
+	LDX #FAMISTUDIO_SFX_CH0
 	JSR AUDIO_PLAY_SFX
 
 no_win:

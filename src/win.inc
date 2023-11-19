@@ -76,7 +76,8 @@ load_win_tilemap_color:
 	LDA player_2 + Player::score
 	JSR PRINT_NUM
 
-	
+	LDA #0
+	JSR AUDIO_START_MUSIC
 
 ; Hide gameplay stuff
 	CLC
@@ -120,6 +121,7 @@ UPDATE_WIN:
 
 restart_game:
 	LDA #SND_START
+	LDX #FAMISTUDIO_SFX_CH0
 	JSR AUDIO_PLAY_SFX
 
 	; TODO: blink the arrows or something!

@@ -666,10 +666,8 @@ win_tilemap_palette:
 	.byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
 	.byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
 
-;song_shatterhand:
-	;.include "../deps/famistudio/DemoSource/song_shatterhand_ca65.s"
-song_walloffire:
-	.include "../gamedata/wall_of_fire.inc"
+;.include "../deps/famistudio/DemoSource/song_shatterhand_ca65.s"
+.include "../gamedata/music.s"
 
 sounds:
 	.word @soundtable

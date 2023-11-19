@@ -45,6 +45,7 @@ load_mainmenu_tilemap_color:
 	CPX #64
 	BNE load_mainmenu_tilemap_color
 
+	LDA #0
 	JSR AUDIO_START_MUSIC
 	LDX p2_cpu
 	INX
@@ -62,6 +63,7 @@ UPDATE_MAINMENU:
 	RTS
 start_game:
 	LDA #SND_START
+	LDX #FAMISTUDIO_SFX_CH0
 	JSR AUDIO_PLAY_SFX
 
 	; TODO: blink the arrows or something!
