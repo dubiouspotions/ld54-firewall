@@ -10,6 +10,8 @@ INITIALIZE_LEVEL:
 	LDA #%01000000
 	STA player_1 + Player::flags
 
+	LDA #1
+	JSR AUDIO_START_MUSIC
 
 	LDX	#$00
 	STX fire_location_left

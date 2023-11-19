@@ -35,18 +35,19 @@ AUDIO_INIT:
     ldy #>sounds
     jsr famistudio_sfx_init
 
+    ldx #.lobyte(music_data_firewall)
+    ldy #.hibyte(music_data_firewall)
+    lda #1 ; NTSC
+    jsr famistudio_init
+
     rts
 
 AUDIO_NMI_UPDATE:
     jsr famistudio_update
     rts
 
+; Index of song in A
 AUDIO_START_MUSIC:
-    ldx #.lobyte(music_data_walloffire)
-    ldy #.hibyte(music_data_walloffire)
-    lda #1 ; NTSC
-    jsr famistudio_init
-    lda #0
     jsr famistudio_music_play
 
     rts
