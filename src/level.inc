@@ -92,7 +92,11 @@ UPDATE_LEVEL:
 	CPX #1
 	BEQ skip_update_if_winner
 
-	JSR CPU_PLAYER_ACTION
+	LDX p2_cpu
+	CPX #0
+	BNE skip_p2_cpu
+		JSR CPU_PLAYER_ACTION
+	skip_p2_cpu:
 	JSR RESPOND_TO_INPUT
 	JSR DO_PHYSICS
 	JSR MOVE_FIRE

@@ -47,9 +47,9 @@ load_mainmenu_tilemap_color:
 
 	LDA #0
 	JSR AUDIO_START_MUSIC
-	LDX p2_cpu
-	INX
-	STX p2_cpu
+	; LDX p2_cpu
+	; INX
+	; STX p2_cpu
 	RTS
 
 UPDATE_MAINMENU:
