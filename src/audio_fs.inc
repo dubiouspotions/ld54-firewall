@@ -53,8 +53,8 @@ AUDIO_START_MUSIC:
     rts
 
 ; Index of sound in A
+; Sound effects channel in X
 AUDIO_PLAY_SFX:
-	ldx #FAMISTUDIO_SFX_CH0
 	jsr famistudio_sfx_play
 
     rts

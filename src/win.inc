@@ -121,6 +121,7 @@ UPDATE_WIN:
 
 restart_game:
 	LDA #SND_START
+	LDX #FAMISTUDIO_SFX_CH0
 	JSR AUDIO_PLAY_SFX
 
 	; TODO: blink the arrows or something!
